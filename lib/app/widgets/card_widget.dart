@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../theme/app_color.dart';
 import '../theme/app_dimens.dart';
 
-class CardCustom extends StatelessWidget {
-  const CardCustom({super.key, required this.child, this.padding});
+class CardWidget extends StatelessWidget {
+  const CardWidget({super.key, required this.child, this.padding});
 
   final Widget child;
   final EdgeInsetsGeometry? padding;

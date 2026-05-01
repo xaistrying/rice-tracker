@@ -7,4 +7,5 @@ class ImageConstant {
   static const String close = 'assets/icons/close.svg';
   static const String user = 'assets/icons/user.svg';
   static const String rightArrow = 'assets/icons/right_arrow.svg';
+  static const String add = 'assets/icons/add.svg';
 }

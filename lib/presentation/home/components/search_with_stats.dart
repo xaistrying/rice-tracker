@@ -70,7 +70,7 @@ class SearchWithStats extends StatelessWidget {
                       text: '5',
                       style: TextStyle(
                         fontSize: AppDimens.fontSizeDefault,
-                        color: AppColor.primary,
+                        color: AppColor.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -98,7 +98,7 @@ class SearchWithStats extends StatelessWidget {
                     TextSpan(
                       text: '97 kg',
                       style: TextStyle(
-                        fontSize: AppDimens.fontSizeDefault,
+                        fontSize: AppDimens.fontSize16,
                         fontWeight: FontWeight.bold,
                         color: AppColor.primary,
                       ),
