@@ -1,5 +1,15 @@
 {
   "@@locale": "en",
   "@appTitle": {},
-  "appTitle": "Rice Tracker"
+  "appTitle": "Rice Tracker",
+  "@settings": {},
+  "settings": "Settings",
+  "@languages": {},
+  "languages": "Languages",
+  "@close": {},
+  "close": "Close",
+  "@confirm": {},
+  "confirm": "Confirm",
+  "@add": {},
+  "add": "Add"
 }

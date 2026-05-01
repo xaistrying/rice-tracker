@@ -10,4 +10,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appTitle => 'Rice Tracker';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get languages => 'Languages';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get add => 'Add';
 }

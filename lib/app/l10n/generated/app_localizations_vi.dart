@@ -10,4 +10,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get appTitle => 'Sổ Gạo';
+
+  @override
+  String get settings => 'Cài đặt';
+
+  @override
+  String get languages => 'Ngôn ngữ';
+
+  @override
+  String get close => 'Đóng';
+
+  @override
+  String get confirm => 'Xác nhận';
+
+  @override
+  String get add => 'Thêm';
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 // Project imports:
+import 'package:rice_tracker/app/extension/context_extension.dart';
 import '../theme/app_color.dart';
 import '../theme/app_dimens.dart';
 
@@ -13,16 +14,14 @@ class DialogWidget extends StatelessWidget {
     super.key,
     required this.title,
     this.body,
-    this.buttonName,
-    this.buttonFunc,
-    this.cancelButtonName,
+    this.confirmButtonFunc,
+    this.confirmButtonName,
   });
 
   final String title;
   final Widget? body;
-  final String? buttonName;
-  final Function()? buttonFunc;
-  final String? cancelButtonName;
+  final Function()? confirmButtonFunc;
+  final String? confirmButtonName;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +37,7 @@ class DialogWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // MARK: Header
+            // Header
             Text(
               title,
               style: TextStyle(
@@ -48,10 +47,10 @@ class DialogWidget extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            // MARK: Body
+            // Body
             body ?? const SizedBox.shrink(),
 
-            // MARK: Actions
+            // Actions
             const SizedBox(height: AppDimens.padding20),
             Row(
               spacing: AppDimens.padding12,
@@ -78,7 +77,7 @@ class DialogWidget extends StatelessWidget {
                       overlayColor: Colors.transparent,
                     ),
                     child: Text(
-                      "Cancel",
+                      context.loc.close,
                       style: TextStyle(
                         fontSize: AppDimens.fontSizeDefault,
                         fontWeight: FontWeight.bold,
@@ -90,7 +89,7 @@ class DialogWidget extends StatelessWidget {
                 Expanded(
                   child: TextButton(
                     onPressed: () {
-                      if (buttonFunc != null) buttonFunc?.call();
+                      if (confirmButtonFunc != null) confirmButtonFunc?.call();
                       context.pop(true);
                     },
                     style: TextButton.styleFrom(
@@ -108,7 +107,7 @@ class DialogWidget extends StatelessWidget {
                       overlayColor: Colors.transparent,
                     ),
                     child: Text(
-                      "Add Person",
+                      confirmButtonName ?? context.loc.confirm,
                       style: TextStyle(
                         fontSize: AppDimens.fontSizeDefault,
                         fontWeight: FontWeight.bold,

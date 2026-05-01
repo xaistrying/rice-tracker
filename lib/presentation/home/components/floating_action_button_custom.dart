@@ -1,6 +1,11 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_svg/flutter_svg.dart';
 
+// Project imports:
+import 'package:rice_tracker/app/extension/context_extension.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
@@ -25,6 +30,7 @@ class FloatingActionButtonCustom extends StatelessWidget {
             title: 'Add New Person',
             body: Column(
               children: [
+                // Description
                 Text(
                   'Enter the name of the person to track their rice.',
                   style: TextStyle(
@@ -33,6 +39,8 @@ class FloatingActionButtonCustom extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: AppDimens.padding12),
+
+                // Name Input
                 Align(
                   alignment: AlignmentGeometry.centerLeft,
                   child: Text(
@@ -44,6 +52,8 @@ class FloatingActionButtonCustom extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(height: AppDimens.padding4),
+
                 TextFormField(
                   controller: controller,
                   style: TextStyle(
@@ -58,12 +68,14 @@ class FloatingActionButtonCustom extends StatelessWidget {
                         color: AppColor.foreground,
                       ),
                     ),
+
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
                         AppDimens.borderRadius8,
                       ),
                       borderSide: BorderSide(color: AppColor.border),
                     ),
+
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
                         AppDimens.borderRadius8,
@@ -74,8 +86,12 @@ class FloatingActionButtonCustom extends StatelessWidget {
                 ),
               ],
             ),
+
+            confirmButtonName: context.loc.add,
+            confirmButtonFunc: () {},
           ),
         ),
+
         backgroundColor: AppColor.primary,
         shape: CircleBorder(),
 

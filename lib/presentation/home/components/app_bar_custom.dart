@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 // Package imports:
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rice_tracker/app/router/app_router.dart';
 
 // Project imports:
+import 'package:rice_tracker/app/router/app_router.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/extension/context_extension.dart';
 import '../../../app/theme/app_color.dart';

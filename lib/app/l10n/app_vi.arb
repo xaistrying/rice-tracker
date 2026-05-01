@@ -1,5 +1,15 @@
 {
   "@@locale": "vi",
   "@appTitle": {},
-  "appTitle": "Sổ Gạo"
+  "appTitle": "Sổ Gạo",
+  "@settings": {},
+  "settings": "Cài đặt",
+  "@languages": {},
+  "languages": "Ngôn ngữ",
+  "@close": {},
+  "close": "Đóng",
+  "@confirm": {},
+  "confirm": "Xác nhận",
+  "@add": {},
+  "add": "Thêm"
 }

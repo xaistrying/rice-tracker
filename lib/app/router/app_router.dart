@@ -1,9 +1,9 @@
 // Package imports:
 import 'package:go_router/go_router.dart';
-import 'package:rice_tracker/presentation/purchaser_details/purchaser_details_screen.dart';
-import 'package:rice_tracker/presentation/settings/settings_screen.dart';
 
 // Project imports:
+import 'package:rice_tracker/presentation/purchaser_details/purchaser_details_screen.dart';
+import 'package:rice_tracker/presentation/settings/settings_screen.dart';
 import '../../presentation/home/home_screen.dart';
 
 class AppRouter {

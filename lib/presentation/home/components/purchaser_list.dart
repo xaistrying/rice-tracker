@@ -1,9 +1,13 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+
+// Project imports:
 import 'package:rice_tracker/app/theme/app_dimens.dart';
 import 'package:rice_tracker/app/widgets/card_widget.dart';
-
 import '../../../app/constants/image_constant.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/app_color.dart';

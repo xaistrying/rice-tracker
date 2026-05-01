@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 // Project imports:
 import 'app/bloc/app_config/app_config_cubit.dart';
+import 'app/bloc/app_data/app_data_cubit.dart';
 import 'app/di/injector.dart';
 import 'app/l10n/generated/app_localizations.dart';
 import 'app/router/app_router.dart';
@@ -17,7 +18,10 @@ Future<void> main() async {
   await initDependencies();
   runApp(
     MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => AppConfigCubit())],
+      providers: [
+        BlocProvider(create: (context) => AppConfigCubit()),
+        BlocProvider(create: (context) => AppDataCubit()),
+      ],
       child: MainApp(),
     ),
   );
