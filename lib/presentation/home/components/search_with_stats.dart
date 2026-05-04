@@ -12,7 +12,9 @@ import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
 
 class SearchWithStats extends StatelessWidget {
-  const SearchWithStats({super.key});
+  const SearchWithStats({super.key, required this.searchController});
+
+  final TextEditingController searchController;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class SearchWithStats extends StatelessWidget {
         spacing: AppDimens.padding16,
         children: [
           SearchBar(
+            controller: searchController,
             backgroundColor: const WidgetStatePropertyAll(AppColor.card),
             elevation: const WidgetStatePropertyAll(0),
 
@@ -49,7 +52,7 @@ class SearchWithStats extends StatelessWidget {
 
             trailing: [
               IconButton(
-                onPressed: () {},
+                onPressed: () => searchController.clear(),
                 highlightColor: AppColor.primary,
                 hoverColor: AppColor.selectionColor,
                 icon: Icon(Icons.close_rounded),

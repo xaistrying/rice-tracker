@@ -17,10 +17,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final nameController = TextEditingController();
+  final searchController = TextEditingController();
 
   @override
   void dispose() {
     nameController.dispose();
+    searchController.dispose();
     super.dispose();
   }
 
@@ -35,8 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Column(
           spacing: AppDimens.padding16,
           children: [
-            SearchWithStats(),
-            Expanded(child: PurchaserList()),
+            SearchWithStats(searchController: searchController),
+            Expanded(child: PurchaserList(searchController: searchController)),
             SizedBox(),
           ],
         ),
