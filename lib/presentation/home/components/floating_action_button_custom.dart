@@ -14,19 +14,10 @@ import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
 import '../../../app/widgets/dialog_widget.dart';
 
-class FloatingActionButtonCustom extends StatefulWidget {
+class FloatingActionButtonCustom extends StatelessWidget {
   const FloatingActionButtonCustom({super.key, required this.controller});
 
   final TextEditingController controller;
-
-  @override
-  State<FloatingActionButtonCustom> createState() =>
-      _FloatingActionButtonCustomState();
-}
-
-class _FloatingActionButtonCustomState
-    extends State<FloatingActionButtonCustom> {
-  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -38,105 +29,101 @@ class _FloatingActionButtonCustomState
       child: FloatingActionButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (BuildContext context) => DialogWidget(
-            title: 'Add New Person',
-            body: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  // Description
-                  Text(
-                    'Enter the name of the person to track their rice.',
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeDefault,
-                      color: AppColor.foreground,
-                    ),
-                  ),
-                  SizedBox(height: AppDimens.padding12),
-
-                  // Name Input
-                  Align(
-                    alignment: AlignmentGeometry.centerLeft,
-                    child: Text(
-                      'Name',
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeDefault,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.black,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: AppDimens.padding4),
-
-                  TextFormField(
-                    controller: widget.controller,
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeDefault,
-                      color: AppColor.black,
-                    ),
-                    decoration: InputDecoration(
-                      hint: Text(
-                        'Enter name...',
+          builder: (BuildContext context) => ValueListenableBuilder(
+            valueListenable: controller,
+            builder: (BuildContext context, value, Widget? child) =>
+                DialogWidget(
+                  isConfirmButtonDisable: controller.text == '',
+                  title: 'Add New Person',
+                  body: Column(
+                    children: [
+                      // Description
+                      Text(
+                        'Enter the name of the person to track their rice.',
                         style: TextStyle(
                           fontSize: AppDimens.fontSizeDefault,
                           color: AppColor.foreground,
                         ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
-                        ),
-                        borderSide: BorderSide(color: AppColor.border),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
-                        ),
-                        borderSide: BorderSide(
-                          color: AppColor.primary,
-                          width: 2,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
-                        ),
-                        borderSide: BorderSide(
-                          color: AppColor.destructive,
-                          width: 1,
+                      SizedBox(height: AppDimens.padding12),
+
+                      // Name Input
+                      Align(
+                        alignment: AlignmentGeometry.centerLeft,
+                        child: Text(
+                          'Name',
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeDefault,
+                            fontWeight: FontWeight.bold,
+                            color: AppColor.black,
+                          ),
                         ),
                       ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
+                      SizedBox(height: AppDimens.padding4),
+
+                      TextFormField(
+                        controller: controller,
+                        style: TextStyle(
+                          fontSize: AppDimens.fontSizeDefault,
+                          color: AppColor.black,
                         ),
-                        borderSide: BorderSide(
-                          color: AppColor.destructive,
-                          width: 2,
+                        decoration: InputDecoration(
+                          hint: Text(
+                            'Enter name...',
+                            style: TextStyle(
+                              fontSize: AppDimens.fontSizeDefault,
+                              color: AppColor.foreground,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppDimens.borderRadius8,
+                            ),
+                            borderSide: BorderSide(color: AppColor.border),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppDimens.borderRadius8,
+                            ),
+                            borderSide: BorderSide(
+                              color: AppColor.primary,
+                              width: 2,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppDimens.borderRadius8,
+                            ),
+                            borderSide: BorderSide(
+                              color: AppColor.destructive,
+                              width: 1,
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppDimens.borderRadius8,
+                            ),
+                            borderSide: BorderSide(
+                              color: AppColor.destructive,
+                              width: 2,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Name is required';
-                      }
-                      return null;
-                    },
+                    ],
                   ),
-                ],
-              ),
-            ),
-            confirmButtonName: context.loc.add,
-            confirmButtonFunc: () {
-              if (_formKey.currentState?.validate() ?? false) {
-                context.read<AppDataCubit>().addNewPurchaser(
-                  name: widget.controller.text,
-                );
-                context.pop(true);
-              }
-            },
+                  confirmButtonName: context.loc.add,
+                  confirmButtonFunc: controller.text == ''
+                      ? null
+                      : () {
+                          context.read<AppDataCubit>().addNewPurchaser(
+                            name: controller.text,
+                          );
+                          context.pop(true);
+                        },
+                ),
           ),
-        ).then((value) => widget.controller.clear()),
+        ).then((value) => controller.clear()),
         backgroundColor: AppColor.primary,
         shape: CircleBorder(),
         elevation: 1,

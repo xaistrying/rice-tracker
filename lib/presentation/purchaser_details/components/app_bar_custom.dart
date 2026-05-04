@@ -27,8 +27,13 @@ class AppBarCustom extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _AppBarCustomState extends State<AppBarCustom> {
-  final formKey = GlobalKey<FormState>();
-  String? newName;
+  final newNameController = TextEditingController();
+
+  @override
+  void dispose() {
+    newNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,109 +65,101 @@ class _AppBarCustomState extends State<AppBarCustom> {
         ),
       ),
       title: GestureDetector(
-        onTap: () => showDialog(
-          context: context,
-          builder: (context) => DialogWidget(
-            title: 'Edit Name',
-            body: Form(
-              key: formKey,
-              child: Column(
-                children: [
-                  Text(
-                    'Enter a new name to replace the current one.',
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeDefault,
-                      color: AppColor.foreground,
-                    ),
-                  ),
-                  SizedBox(height: AppDimens.padding12),
-                  Align(
-                    alignment: AlignmentGeometry.centerLeft,
-                    child: Text(
-                      'Name',
+        onTap: () {
+          newNameController.text = widget.purchaser.name ?? '';
+          showDialog(
+            context: context,
+            builder: (context) => ValueListenableBuilder(
+              valueListenable: newNameController,
+              builder: (context, value, child) => DialogWidget(
+                isConfirmButtonDisable: newNameController.text == '',
+                title: 'Edit Name',
+                body: Column(
+                  children: [
+                    Text(
+                      'Enter a new name to replace the current one.',
                       style: TextStyle(
                         fontSize: AppDimens.fontSizeDefault,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.black,
+                        color: AppColor.foreground,
                       ),
                     ),
-                  ),
-                  SizedBox(height: AppDimens.padding4),
-                  TextFormField(
-                    initialValue: widget.purchaser.name ?? '',
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeDefault,
-                      color: AppColor.black,
-                    ),
-                    decoration: InputDecoration(
-                      hint: Text(
-                        'Enter name...',
+                    SizedBox(height: AppDimens.padding12),
+                    Align(
+                      alignment: AlignmentGeometry.centerLeft,
+                      child: Text(
+                        'Name',
                         style: TextStyle(
                           fontSize: AppDimens.fontSizeDefault,
-                          color: AppColor.foreground,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
-                        ),
-                        borderSide: BorderSide(color: AppColor.border),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
-                        ),
-                        borderSide: BorderSide(
-                          color: AppColor.primary,
-                          width: 2,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
-                        ),
-                        borderSide: BorderSide(
-                          color: AppColor.destructive,
-                          width: 1,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
-                        ),
-                        borderSide: BorderSide(
-                          color: AppColor.destructive,
-                          width: 2,
+                          fontWeight: FontWeight.bold,
+                          color: AppColor.black,
                         ),
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Name is required';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      newName = value?.trim();
-                    },
-                  ),
-                ],
+                    SizedBox(height: AppDimens.padding4),
+                    TextFormField(
+                      controller: newNameController,
+                      style: TextStyle(
+                        fontSize: AppDimens.fontSizeDefault,
+                        color: AppColor.black,
+                      ),
+                      decoration: InputDecoration(
+                        hint: Text(
+                          'Enter name...',
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeDefault,
+                            color: AppColor.foreground,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimens.borderRadius8,
+                          ),
+                          borderSide: BorderSide(color: AppColor.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimens.borderRadius8,
+                          ),
+                          borderSide: BorderSide(
+                            color: AppColor.primary,
+                            width: 2,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimens.borderRadius8,
+                          ),
+                          borderSide: BorderSide(
+                            color: AppColor.destructive,
+                            width: 1,
+                          ),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimens.borderRadius8,
+                          ),
+                          borderSide: BorderSide(
+                            color: AppColor.destructive,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                confirmButtonFunc: newNameController.text == ''
+                    ? null
+                    : () {
+                        context.read<AppDataCubit>().updatePurchaserName(
+                          id: widget.purchaser.id,
+                          newName: newNameController.text,
+                        );
+                        context.pop();
+                      },
               ),
             ),
-            confirmButtonFunc: () {
-              if (formKey.currentState?.validate() ?? false) {
-                formKey.currentState?.save();
-                if (newName != null && newName != widget.purchaser.name) {
-                  context.read<AppDataCubit>().updatePurchaserName(
-                    id: widget.purchaser.id,
-                    newName: newName,
-                  );
-                }
-                context.pop();
-              }
-            },
-          ),
-        ),
+          );
+        },
         child: BlocBuilder<AppDataCubit, AppDataState>(
           builder: (context, state) {
             return SizedBox(
@@ -204,7 +201,7 @@ class _AppBarCustomState extends State<AppBarCustom> {
           icon: SvgPicture.asset(
             ImageConstant.delete,
             colorFilter: const ColorFilter.mode(
-              AppColor.black,
+              AppColor.destructive,
               BlendMode.srcIn,
             ),
           ),

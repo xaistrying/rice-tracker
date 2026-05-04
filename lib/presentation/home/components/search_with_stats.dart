@@ -10,6 +10,7 @@ import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
+import '../../../domain/models/purchaser_model.dart';
 
 class SearchWithStats extends StatelessWidget {
   const SearchWithStats({super.key, required this.searchController});
@@ -74,52 +75,79 @@ class SearchWithStats extends StatelessWidget {
                 (previousValue, element) =>
                     previousValue + (element.totalWeight ?? 0.0),
               );
-              return Row(
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: purchaserList.length.toString(),
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeDefault,
-                            color: AppColor.black,
-                            fontWeight: FontWeight.bold,
-                          ),
+              return ValueListenableBuilder(
+                valueListenable: searchController,
+                builder: (context, value, child) {
+                  List<PurchaserModel> filterdPurchaserList =
+                      state.data.purchaserList;
+                  if (value.text != '') {
+                    filterdPurchaserList = purchaserList
+                        .where((e) => (e.name ?? '').contains(value.text))
+                        .toList();
+                  }
+                  return Row(
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: filterdPurchaserList.length.toString(),
+                              style: TextStyle(
+                                fontSize: AppDimens.fontSizeDefault,
+                                color: AppColor.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' of ',
+                              style: TextStyle(
+                                fontSize: AppDimens.fontSizeDefault,
+                                color: AppColor.black,
+                              ),
+                            ),
+                            TextSpan(
+                              text: purchaserList.length.toString(),
+                              style: TextStyle(
+                                fontSize: AppDimens.fontSizeDefault,
+                                color: AppColor.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' people',
+                              style: TextStyle(
+                                fontSize: AppDimens.fontSizeDefault,
+                                color: AppColor.black,
+                              ),
+                            ),
+                          ],
                         ),
-                        TextSpan(
-                          text: ' people',
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeDefault,
-                            color: AppColor.black,
-                          ),
+                      ),
+                      Spacer(),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Grand Total: ',
+                              style: TextStyle(
+                                fontSize: AppDimens.fontSizeDefault,
+                                color: AppColor.black,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '${totalWeights.toStringAsFixed(1)} kg',
+                              style: TextStyle(
+                                fontSize: AppDimens.fontSize16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColor.primary,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  Spacer(),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Grand Total: ',
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeDefault,
-                            color: AppColor.black,
-                          ),
-                        ),
-                        TextSpan(
-                          text: '$totalWeights kg',
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSize16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                      ),
+                    ],
+                  );
+                },
               );
             },
           ),

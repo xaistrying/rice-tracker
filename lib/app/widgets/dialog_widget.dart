@@ -16,12 +16,14 @@ class DialogWidget extends StatelessWidget {
     this.body,
     this.confirmButtonFunc,
     this.confirmButtonName,
+    this.isConfirmButtonDisable = false,
   });
 
   final String title;
   final Widget? body;
   final Function()? confirmButtonFunc;
   final String? confirmButtonName;
+  final bool isConfirmButtonDisable;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +68,7 @@ class DialogWidget extends StatelessWidget {
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius4,
+                          AppDimens.borderRadius8,
                         ),
                       ),
                       side: BorderSide(
@@ -88,11 +90,17 @@ class DialogWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: TextButton(
-                    onPressed: () {
-                      if (confirmButtonFunc != null) confirmButtonFunc?.call();
-                    },
+                    onPressed: isConfirmButtonDisable
+                        ? null
+                        : () {
+                            if (confirmButtonFunc != null) {
+                              confirmButtonFunc?.call();
+                            }
+                          },
                     style: TextButton.styleFrom(
-                      backgroundColor: AppColor.primary,
+                      backgroundColor: isConfirmButtonDisable
+                          ? AppColor.lightPrimary
+                          : AppColor.primary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppDimens.padding16,
                         vertical: AppDimens.padding16,
@@ -110,7 +118,9 @@ class DialogWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: AppDimens.fontSizeDefault,
                         fontWeight: FontWeight.bold,
-                        color: AppColor.white,
+                        color: isConfirmButtonDisable
+                            ? AppColor.grey
+                            : AppColor.white,
                       ),
                     ),
                   ),

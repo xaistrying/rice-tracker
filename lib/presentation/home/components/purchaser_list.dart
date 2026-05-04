@@ -98,11 +98,9 @@ class PurchaserList extends StatelessWidget {
                       ],
                     ),
                     onTap: () {
-                      context.push(
-                        AppRouter.purchaserDetails,
-                        extra: purchaser,
-                      );
-                      // searchController.clear();
+                      context
+                          .push(AppRouter.purchaserDetails, extra: purchaser)
+                          .then((value) => searchController.clear());
                     },
                   ),
                 );
