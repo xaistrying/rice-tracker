@@ -90,7 +90,6 @@ class DialogWidget extends StatelessWidget {
                   child: TextButton(
                     onPressed: () {
                       if (confirmButtonFunc != null) confirmButtonFunc?.call();
-                      context.pop(true);
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: AppColor.primary,

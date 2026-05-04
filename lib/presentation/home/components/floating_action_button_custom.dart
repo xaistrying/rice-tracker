@@ -1,8 +1,11 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Package imports:
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
 
 // Project imports:
 import 'package:rice_tracker/app/extension/context_extension.dart';
@@ -11,10 +14,19 @@ import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
 import '../../../app/widgets/dialog_widget.dart';
 
-class FloatingActionButtonCustom extends StatelessWidget {
+class FloatingActionButtonCustom extends StatefulWidget {
   const FloatingActionButtonCustom({super.key, required this.controller});
 
   final TextEditingController controller;
+
+  @override
+  State<FloatingActionButtonCustom> createState() =>
+      _FloatingActionButtonCustomState();
+}
+
+class _FloatingActionButtonCustomState
+    extends State<FloatingActionButtonCustom> {
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,78 +40,109 @@ class FloatingActionButtonCustom extends StatelessWidget {
           context: context,
           builder: (BuildContext context) => DialogWidget(
             title: 'Add New Person',
-            body: Column(
-              children: [
-                // Description
-                Text(
-                  'Enter the name of the person to track their rice.',
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeDefault,
-                    color: AppColor.foreground,
-                  ),
-                ),
-                SizedBox(height: AppDimens.padding12),
-
-                // Name Input
-                Align(
-                  alignment: AlignmentGeometry.centerLeft,
-                  child: Text(
-                    'Name',
+            body: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  // Description
+                  Text(
+                    'Enter the name of the person to track their rice.',
                     style: TextStyle(
                       fontSize: AppDimens.fontSizeDefault,
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.black,
+                      color: AppColor.foreground,
                     ),
                   ),
-                ),
-                SizedBox(height: AppDimens.padding4),
+                  SizedBox(height: AppDimens.padding12),
 
-                TextFormField(
-                  controller: controller,
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeDefault,
-                    color: AppColor.black,
-                  ),
-                  decoration: InputDecoration(
-                    hint: Text(
-                      'Enter name...',
+                  // Name Input
+                  Align(
+                    alignment: AlignmentGeometry.centerLeft,
+                    child: Text(
+                      'Name',
                       style: TextStyle(
                         fontSize: AppDimens.fontSizeDefault,
-                        color: AppColor.foreground,
+                        fontWeight: FontWeight.bold,
+                        color: AppColor.black,
                       ),
-                    ),
-
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppDimens.borderRadius8,
-                      ),
-                      borderSide: BorderSide(color: AppColor.border),
-                    ),
-
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppDimens.borderRadius8,
-                      ),
-                      borderSide: BorderSide(color: AppColor.primary, width: 2),
                     ),
                   ),
-                ),
-              ],
+                  SizedBox(height: AppDimens.padding4),
+
+                  TextFormField(
+                    controller: widget.controller,
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeDefault,
+                      color: AppColor.black,
+                    ),
+                    decoration: InputDecoration(
+                      hint: Text(
+                        'Enter name...',
+                        style: TextStyle(
+                          fontSize: AppDimens.fontSizeDefault,
+                          color: AppColor.foreground,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppDimens.borderRadius8,
+                        ),
+                        borderSide: BorderSide(color: AppColor.border),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppDimens.borderRadius8,
+                        ),
+                        borderSide: BorderSide(
+                          color: AppColor.primary,
+                          width: 2,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppDimens.borderRadius8,
+                        ),
+                        borderSide: BorderSide(
+                          color: AppColor.destructive,
+                          width: 1,
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppDimens.borderRadius8,
+                        ),
+                        borderSide: BorderSide(
+                          color: AppColor.destructive,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Name is required';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
             ),
-
             confirmButtonName: context.loc.add,
-            confirmButtonFunc: () {},
+            confirmButtonFunc: () {
+              if (_formKey.currentState?.validate() ?? false) {
+                context.read<AppDataCubit>().addNewPurchaser(
+                  name: widget.controller.text,
+                );
+                context.pop(true);
+              }
+            },
           ),
-        ),
-
+        ).then((value) => widget.controller.clear()),
         backgroundColor: AppColor.primary,
         shape: CircleBorder(),
-
         elevation: 1,
         highlightElevation: 0,
         hoverElevation: 0,
         disabledElevation: 1,
-
         hoverColor: Colors.transparent,
         focusColor: Colors.transparent,
         splashColor: Colors.transparent,

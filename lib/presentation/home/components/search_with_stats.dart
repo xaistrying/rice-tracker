@@ -2,9 +2,11 @@
 import 'package:flutter/material.dart';
 
 // Package imports:
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 // Project imports:
+import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
@@ -61,52 +63,62 @@ class SearchWithStats extends StatelessWidget {
               ),
             ),
           ),
-          Row(
-            children: [
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: '5',
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeDefault,
-                        color: AppColor.black,
-                        fontWeight: FontWeight.bold,
-                      ),
+          BlocBuilder<AppDataCubit, AppDataState>(
+            builder: (context, state) {
+              final purchaserList = state.data.purchaserList;
+              final totalWeights = purchaserList.fold(
+                0.0,
+                (previousValue, element) =>
+                    previousValue + (element.totalWeight ?? 0.0),
+              );
+              return Row(
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: purchaserList.length.toString(),
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeDefault,
+                            color: AppColor.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' people',
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeDefault,
+                            color: AppColor.black,
+                          ),
+                        ),
+                      ],
                     ),
-                    TextSpan(
-                      text: ' people',
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeDefault,
-                        color: AppColor.black,
-                      ),
+                  ),
+                  Spacer(),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Grand Total: ',
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSizeDefault,
+                            color: AppColor.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '$totalWeights kg',
+                          style: TextStyle(
+                            fontSize: AppDimens.fontSize16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColor.primary,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              Spacer(),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Grand Total: ',
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeDefault,
-                        color: AppColor.black,
-                      ),
-                    ),
-                    TextSpan(
-                      text: '97 kg',
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSize16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
