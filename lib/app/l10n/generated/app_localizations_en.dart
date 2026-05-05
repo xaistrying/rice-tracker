@@ -25,4 +25,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get add => 'Add';
+
+  @override
+  String get grandTotal => 'Grand Total';
+
+  @override
+  String get people => 'people';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get enterNameDialogTitle => 'Add New Person';
+
+  @override
+  String get enterNameDialogDescription =>
+      'Enter the name of the person to track their rice.';
+
+  @override
+  String get enterName => 'Enter name...';
+
+  @override
+  String get deleteItemTitle => 'Delete this item?';
+
+  @override
+  String get deleteItemDescription => 'Once deleted, it can’t be recovered.';
+
+  @override
+  String get enterAnAmount => 'Enter an amount...';
 }

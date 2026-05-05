@@ -34,16 +34,17 @@ class FloatingActionButtonCustom extends StatelessWidget {
             builder: (BuildContext context, value, Widget? child) =>
                 DialogWidget(
                   isConfirmButtonDisable: controller.text == '',
-                  title: 'Add New Person',
+                  title: context.loc.enterNameDialogTitle,
                   body: Column(
                     children: [
                       // Description
                       Text(
-                        'Enter the name of the person to track their rice.',
+                        context.loc.enterNameDialogDescription,
                         style: TextStyle(
                           fontSize: AppDimens.fontSizeDefault,
                           color: AppColor.foreground,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                       SizedBox(height: AppDimens.padding12),
 
@@ -51,7 +52,7 @@ class FloatingActionButtonCustom extends StatelessWidget {
                       Align(
                         alignment: AlignmentGeometry.centerLeft,
                         child: Text(
-                          'Name',
+                          context.loc.name,
                           style: TextStyle(
                             fontSize: AppDimens.fontSizeDefault,
                             fontWeight: FontWeight.bold,
@@ -69,7 +70,7 @@ class FloatingActionButtonCustom extends StatelessWidget {
                         ),
                         decoration: InputDecoration(
                           hint: Text(
-                            'Enter name...',
+                            context.loc.enterName,
                             style: TextStyle(
                               fontSize: AppDimens.fontSizeDefault,
                               color: AppColor.foreground,

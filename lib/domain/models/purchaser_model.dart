@@ -1,10 +1,13 @@
 // Dart imports:
 import 'dart:convert';
 
+// Project imports:
+import 'package:rice_tracker/domain/models/bag_model.dart';
+
 class PurchaserModel {
   String? id;
   String? name;
-  List<double>? listOfRiceBagWeights;
+  List<BagModel>? listOfRiceBagWeights;
   int? quantity;
   double? totalWeight;
   String? dateAdded;
@@ -21,7 +24,7 @@ class PurchaserModel {
   PurchaserModel copyWith({
     String? id,
     String? name,
-    List<double>? listOfRiceBagWeights,
+    List<BagModel>? listOfRiceBagWeights,
     int? quantity,
     double? totalWeight,
     String? dateAdded,
@@ -44,8 +47,10 @@ class PurchaserModel {
     name: json["name"],
     listOfRiceBagWeights: json["listOfRiceBagWeights"] == null
         ? []
-        : List<double>.from(
-            json["listOfRiceBagWeights"]!.map((x) => x?.toDouble()),
+        : List<BagModel>.from(
+            (json["listOfRiceBagWeights"] as List).map(
+              (x) => BagModel.fromJson(x as Map<String, dynamic>),
+            ),
           ),
     quantity: json["quantity"],
     totalWeight: json["totalWeight"]?.toDouble(),
@@ -57,13 +62,15 @@ class PurchaserModel {
     "name": name,
     "listOfRiceBagWeights": listOfRiceBagWeights == null
         ? []
-        : List<dynamic>.from(listOfRiceBagWeights!.map((x) => x)),
+        : List<dynamic>.from(listOfRiceBagWeights!.map((x) => x.toJson())),
     "quantity": quantity,
     "totalWeight": totalWeight,
     "dateAdded": dateAdded,
   };
 
   static List<PurchaserModel> fromList(List<dynamic> data) {
-    return data.map((map) => PurchaserModel.fromJson(map as Map<String, dynamic>)).toList();
+    return data
+        .map((map) => PurchaserModel.fromJson(map as Map<String, dynamic>))
+        .toList();
   }
 }

@@ -81,7 +81,7 @@ class PurchaserList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${purchaser.totalWeight ?? 0} kg',
+                          '${(purchaser.totalWeight ?? 0).toStringAsFixed(1)} kg',
                           style: TextStyle(
                             fontSize: AppDimens.fontSize16,
                             fontWeight: FontWeight.bold,

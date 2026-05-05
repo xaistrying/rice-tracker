@@ -1,10 +1,15 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+// Package imports:
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 // Project imports:
 import 'package:rice_tracker/domain/models/purchaser_model.dart';
 import 'package:rice_tracker/presentation/purchaser_details/components/app_bar_custom.dart';
+import 'package:rice_tracker/presentation/purchaser_details/components/bag_list.dart';
 import 'package:rice_tracker/presentation/purchaser_details/components/rice_input_with_stats.dart';
+import 'package:rice_tracker/presentation/purchaser_details/cubit/selected_item_cubit.dart';
 import '../../app/theme/app_dimens.dart';
 
 class PurchaserDetailsScreen extends StatelessWidget {
@@ -14,15 +19,18 @@ class PurchaserDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBarCustom(purchaser: purchaser),
-        body: Column(
-          spacing: AppDimens.padding16,
-          children: [
-            Expanded(child: ListView()),
-            RiceInputWithStats(purchaser: purchaser),
-          ],
+    return BlocProvider(
+      create: (context) => SelectedItemCubit(),
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBarCustom(purchaser: purchaser),
+          body: Column(
+            spacing: AppDimens.padding16,
+            children: [
+              BagList(purchaser: purchaser),
+              RiceInputWithStats(purchaser: purchaser),
+            ],
+          ),
         ),
       ),
     );

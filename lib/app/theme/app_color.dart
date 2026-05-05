@@ -17,4 +17,5 @@ class AppColor {
 
   static const selectionColor = Color.fromARGB(75, 242, 201, 76);
   static const lightPrimary = Color.fromARGB(255, 255, 244, 207);
+  static const barrierColor = Color.fromARGB(50, 51, 49, 43);
 }

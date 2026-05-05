@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 // Project imports:
 import 'package:rice_tracker/app/di/injector.dart';
+import 'package:rice_tracker/domain/models/bag_model.dart';
 import 'package:rice_tracker/domain/models/purchaser_model.dart';
 import '../../../domain/repositories/purchaser_repository.dart';
 import '../../extension/date_time_extension.dart';
@@ -77,6 +78,72 @@ class AppDataCubit extends Cubit<AppDataState> {
       purchaserList[index].name = newName;
       _purchaserRepo.cachePurchaserList(purchaserList: purchaserList);
     }
+
+    emit(
+      UpdatePurchaserList(state.data.copyWith(purchaserList: purchaserList)),
+    );
+  }
+
+  void addBagToPurchaser({required String? id, required String? weight}) {
+    emit(UpdateInProgress(state.data));
+
+    if (id == null) return;
+
+    if (double.tryParse(weight ?? '') == null) return;
+
+    final purchaserList = [...state.data.purchaserList];
+
+    final index = purchaserList.indexWhere((e) => e.id == id);
+
+    if (purchaserList[index].listOfRiceBagWeights == null) {
+      purchaserList[index].listOfRiceBagWeights = [];
+    }
+
+    purchaserList[index]
+      ..listOfRiceBagWeights!.add(
+        BagModel(
+          id: DateTime.now().uniqueId,
+          weight: double.parse(weight ?? ''),
+        ),
+      )
+      ..totalWeight = purchaserList[index].listOfRiceBagWeights?.fold(
+        0.0,
+        (sum, item) => (sum ?? 0) + (item.weight ?? 0),
+      )
+      ..quantity = purchaserList[index].listOfRiceBagWeights?.length ?? 0;
+
+    _purchaserRepo.cachePurchaserList(purchaserList: purchaserList);
+
+    emit(
+      UpdatePurchaserList(state.data.copyWith(purchaserList: purchaserList)),
+    );
+  }
+
+  void removeBagFromPurchaser({
+    required String? purchaserId,
+    required String? bagId,
+  }) {
+    emit(UpdateInProgress(state.data));
+
+    if (purchaserId == null || bagId == null) return;
+
+    final purchaserList = [...state.data.purchaserList];
+
+    final index = purchaserList.indexWhere((e) => e.id == purchaserId);
+
+    if (purchaserList[index].listOfRiceBagWeights == null) {
+      purchaserList[index].listOfRiceBagWeights = [];
+    }
+
+    purchaserList[index]
+      ..listOfRiceBagWeights!.removeWhere((item) => item.id == bagId)
+      ..totalWeight = purchaserList[index].listOfRiceBagWeights?.fold(
+        0.0,
+        (sum, item) => (sum ?? 0) + (item.weight ?? 0),
+      )
+      ..quantity = purchaserList[index].listOfRiceBagWeights?.length ?? 0;
+
+    _purchaserRepo.cachePurchaserList(purchaserList: purchaserList);
 
     emit(
       UpdatePurchaserList(state.data.copyWith(purchaserList: purchaserList)),

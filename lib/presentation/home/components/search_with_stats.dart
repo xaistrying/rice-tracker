@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 // Project imports:
 import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
 import '../../../app/constants/image_constant.dart';
+import '../../../app/extension/context_extension.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
 import '../../../domain/models/purchaser_model.dart';
@@ -99,7 +100,7 @@ class SearchWithStats extends StatelessWidget {
                               ),
                             ),
                             TextSpan(
-                              text: ' of ',
+                              text: ' / ',
                               style: TextStyle(
                                 fontSize: AppDimens.fontSizeDefault,
                                 color: AppColor.black,
@@ -114,7 +115,7 @@ class SearchWithStats extends StatelessWidget {
                               ),
                             ),
                             TextSpan(
-                              text: ' people',
+                              text: ' ${context.loc.people}',
                               style: TextStyle(
                                 fontSize: AppDimens.fontSizeDefault,
                                 color: AppColor.black,
@@ -125,10 +126,11 @@ class SearchWithStats extends StatelessWidget {
                       ),
                       Spacer(),
                       RichText(
+                        maxLines: 1,
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Grand Total: ',
+                              text: '${context.loc.grandTotal}: ',
                               style: TextStyle(
                                 fontSize: AppDimens.fontSizeDefault,
                                 color: AppColor.black,
@@ -140,6 +142,7 @@ class SearchWithStats extends StatelessWidget {
                                 fontSize: AppDimens.fontSize16,
                                 fontWeight: FontWeight.bold,
                                 color: AppColor.primary,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],

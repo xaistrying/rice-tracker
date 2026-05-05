@@ -25,4 +25,33 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get add => 'Thêm';
+
+  @override
+  String get grandTotal => 'Tổng khối lượng';
+
+  @override
+  String get people => 'người';
+
+  @override
+  String get name => 'Tên';
+
+  @override
+  String get enterNameDialogTitle => 'Thêm người mới';
+
+  @override
+  String get enterNameDialogDescription =>
+      'Nhập tên người bạn muốn theo dõi số gạo';
+
+  @override
+  String get enterName => 'Nhập tên...';
+
+  @override
+  String get deleteItemTitle => 'Xóa người mua này?';
+
+  @override
+  String get deleteItemDescription =>
+      'Sau khi xóa, bạn sẽ không thể khôi phục.';
+
+  @override
+  String get enterAnAmount => 'Nhập số khối lượng......';
 }

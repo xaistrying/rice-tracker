@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // Package imports:
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 // Project imports:
+import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
+import 'package:rice_tracker/app/extension/context_extension.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
@@ -52,35 +55,38 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                     vertical: AppDimens.padding12,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColor.lightPrimary,
-                    border: Border.all(color: AppColor.primary, width: 2),
+                    color: AppColor.border,
+                    border: Border.all(color: AppColor.grey, width: 2),
                     borderRadius: BorderRadius.circular(
                       AppDimens.borderRadius8,
                     ),
                   ),
                   child: Center(
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text:
-                                '${(widget.purchaser.listOfRiceBagWeights ?? []).length}',
-                            style: TextStyle(
-                              fontSize: AppDimens.iconSize20,
-                              fontWeight: FontWeight.bold,
-                              color: AppColor.foreground,
-                            ),
+                    child: BlocBuilder<AppDataCubit, AppDataState>(
+                      builder: (context, state) {
+                        return RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '${widget.purchaser.quantity ?? 0}',
+                                style: TextStyle(
+                                  fontSize: AppDimens.fontSize16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColor.foreground,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' bags',
+                                style: TextStyle(
+                                  fontSize: AppDimens.fontSizeDefault,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColor.foreground,
+                                ),
+                              ),
+                            ],
                           ),
-                          TextSpan(
-                            text: ' bags',
-                            style: TextStyle(
-                              fontSize: AppDimens.iconSize16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColor.foreground,
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -101,26 +107,31 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                     ),
                   ),
                   child: Center(
-                    child: RichText(
-                      text: TextSpan(
-                        text: (widget.purchaser.totalWeight ?? 0.0)
-                            .toStringAsFixed(1),
-                        style: TextStyle(
-                          fontSize: AppDimens.iconSize20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColor.primary,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: ' kg',
+                    child: BlocBuilder<AppDataCubit, AppDataState>(
+                      builder: (context, state) {
+                        return RichText(
+                          maxLines: 1,
+                          text: TextSpan(
+                            text: (widget.purchaser.totalWeight ?? 0.0)
+                                .toStringAsFixed(1),
                             style: TextStyle(
-                              fontSize: AppDimens.iconSize16,
+                              fontSize: AppDimens.fontSize16,
                               fontWeight: FontWeight.bold,
                               color: AppColor.primary,
                             ),
+                            children: [
+                              TextSpan(
+                                text: ' kg',
+                                style: TextStyle(
+                                  fontSize: AppDimens.fontSizeDefault,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColor.primary,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -150,7 +161,7 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
 
                   decoration: InputDecoration(
                     hint: Text(
-                      'Enter an amount...',
+                      context.loc.enterAnAmount,
                       style: TextStyle(
                         fontSize: AppDimens.fontSizeDefault,
                         color: AppColor.foreground,
@@ -196,7 +207,13 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                 child: ValueListenableBuilder(
                   valueListenable: riceAmountController,
                   builder: (context, value, child) => IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.read<AppDataCubit>().addBagToPurchaser(
+                        id: widget.purchaser.id,
+                        weight: riceAmountController.text,
+                      );
+                      riceAmountController.clear();
+                    },
                     style: IconButton.styleFrom(
                       backgroundColor: riceAmountController.text == ''
                           ? AppColor.lightPrimary
@@ -207,7 +224,7 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                           AppDimens.borderRadius8,
                         ),
                       ),
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.all(AppDimens.padding16),
                       splashFactory: NoSplash.splashFactory,
                       overlayColor: Colors.transparent,
                     ),
@@ -219,7 +236,7 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                             : AppColor.foreground,
                         BlendMode.srcIn,
                       ),
-                      height: AppDimens.iconSize20,
+                      height: AppDimens.iconSize16,
                     ),
                   ),
                 ),

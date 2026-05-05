@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 // Project imports:
+import 'package:rice_tracker/app/extension/context_extension.dart';
 import '../../../app/bloc/app_data/app_data_cubit.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/theme/app_color.dart';
@@ -82,6 +83,7 @@ class _AppBarCustomState extends State<AppBarCustom> {
                         fontSize: AppDimens.fontSizeDefault,
                         color: AppColor.foreground,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                     SizedBox(height: AppDimens.padding12),
                     Align(
@@ -182,8 +184,15 @@ class _AppBarCustomState extends State<AppBarCustom> {
               showDialog(
                 context: context,
                 builder: (context) => DialogWidget(
-                  title: 'Delete this item?',
-                  body: Text('Once deleted, it can’t be recovered.'),
+                  title: context.loc.deleteItemTitle,
+                  body: Text(
+                    context.loc.deleteItemDescription,
+                    style: TextStyle(
+                      fontSize: AppDimens.fontSizeDefault,
+                      color: AppColor.foreground,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                   confirmButtonFunc: () {
                     context.read<AppDataCubit>().removePurchaser(
                       id: widget.purchaser.id,

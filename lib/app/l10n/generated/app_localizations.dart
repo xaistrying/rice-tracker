@@ -132,6 +132,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add'**
   String get add;
+
+  /// No description provided for @grandTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Grand Total'**
+  String get grandTotal;
+
+  /// No description provided for @people.
+  ///
+  /// In en, this message translates to:
+  /// **'people'**
+  String get people;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @enterNameDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Person'**
+  String get enterNameDialogTitle;
+
+  /// No description provided for @enterNameDialogDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the name of the person to track their rice.'**
+  String get enterNameDialogDescription;
+
+  /// No description provided for @enterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter name...'**
+  String get enterName;
+
+  /// No description provided for @deleteItemTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this item?'**
+  String get deleteItemTitle;
+
+  /// No description provided for @deleteItemDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Once deleted, it can’t be recovered.'**
+  String get deleteItemDescription;
+
+  /// No description provided for @enterAnAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount...'**
+  String get enterAnAmount;
 }
 
 class _AppLocalizationsDelegate
