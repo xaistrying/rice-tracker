@@ -227,7 +227,7 @@ class BagItem extends StatelessWidget {
         color: isSelected ? AppColor.lightPrimary : AppColor.white,
         border: Border.all(
           color: isSelected ? AppColor.primary : AppColor.border,
-          width: isSelected ? 2 : 1,
+          width: 2,
         ),
         borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
       ),
