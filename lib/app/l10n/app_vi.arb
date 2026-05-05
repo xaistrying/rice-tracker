@@ -22,6 +22,8 @@
   "enterNameDialogTitle": "Thêm người mới",
   "@enterNameDialogDescription": {},
   "enterNameDialogDescription": "Nhập tên người bạn muốn theo dõi số gạo",
+  "@editName": {},
+  "editName": "Thay đổi tên",
   "@enterNewNameDialogDescription": {},
   "enterNewNameDialogDescription": "Nhập tên mới để thay thế tên hiện tại.",
   "@enterName": {},

@@ -82,7 +82,7 @@ class _AppBarCustomState extends State<AppBarCustom> {
                 body: Column(
                   children: [
                     Text(
-                      context.loc.enterNewNameDialogDescription,
+                      context.loc.editName,
                       style: TextStyle(
                         fontSize: AppDimens.fontSizeDefault,
                         color: AppColor.foreground,

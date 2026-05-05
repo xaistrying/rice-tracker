@@ -163,6 +163,12 @@ abstract class AppLocalizations {
   /// **'Enter the name of the person to track their rice.'**
   String get enterNameDialogDescription;
 
+  /// No description provided for @editName.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Name'**
+  String get editName;
+
   /// No description provided for @enterNewNameDialogDescription.
   ///
   /// In en, this message translates to:

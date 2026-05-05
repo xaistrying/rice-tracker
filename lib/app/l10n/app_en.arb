@@ -22,6 +22,8 @@
   "enterNameDialogTitle": "Add New Person",
   "@enterNameDialogDescription": {},
   "enterNameDialogDescription": "Enter the name of the person to track their rice.",
+  "@editName": {},
+  "editName": "Edit Name",
   "@enterNewNameDialogDescription": {},
   "enterNewNameDialogDescription": "Enter a new name to replace the current one.",
   "@enterName": {},

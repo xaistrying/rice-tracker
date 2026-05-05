@@ -43,6 +43,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter the name of the person to track their rice.';
 
   @override
+  String get editName => 'Edit Name';
+
+  @override
   String get enterNewNameDialogDescription =>
       'Enter a new name to replace the current one.';
 

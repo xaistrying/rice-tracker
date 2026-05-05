@@ -43,6 +43,9 @@ class AppLocalizationsVi extends AppLocalizations {
       'Nhập tên người bạn muốn theo dõi số gạo';
 
   @override
+  String get editName => 'Thay đổi tên';
+
+  @override
   String get enterNewNameDialogDescription =>
       'Nhập tên mới để thay thế tên hiện tại.';
 
