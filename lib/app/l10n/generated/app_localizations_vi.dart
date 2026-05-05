@@ -67,4 +67,21 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get weight => 'Khối lượng';
+
+  @override
+  String get noPeopleTitle => 'Chưa có ai được thêm';
+
+  @override
+  String get noPeopleDescription =>
+      'Nhấn + để thêm người đầu tiên và theo dõi lượng gạo họ đã mua.';
+
+  @override
+  String get noRiceBagTitle => 'Chưa có bao gạo nào';
+
+  @override
+  String get noRiceBagDescription =>
+      'Hãy thêm bao đầu tiên để bắt đầu theo dõi.';
+
+  @override
+  String get search => 'Tìm kiếm';
 }

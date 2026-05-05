@@ -37,5 +37,15 @@
   "@bag": {},
   "bag": "Bag",
   "@weight": {},
-  "weight": "Weight"
+  "weight": "Weight",
+  "@noPeopleTitle": {},
+  "noPeopleTitle": "No one yet",
+  "@noPeopleDescription": {},
+  "noPeopleDescription": "Tap + to add your first person and track how much rice they bought.",
+  "@noRiceBagTitle": {},
+  "noRiceBagTitle": "No rice bags yet",
+  "@noRiceBagDescription": {},
+  "noRiceBagDescription": "Start adding rice bags by entering the amount for each bag.",
+  "@search": {},
+  "search": "Search"
 }

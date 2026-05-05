@@ -8,8 +8,10 @@ import 'package:go_router/go_router.dart';
 
 // Project imports:
 import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
+import 'package:rice_tracker/app/extension/context_extension.dart';
 import 'package:rice_tracker/app/theme/app_dimens.dart';
 import 'package:rice_tracker/app/widgets/card_widget.dart';
+import 'package:rice_tracker/app/widgets/no_something_yet_tile.dart';
 import 'package:rice_tracker/domain/models/purchaser_model.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/router/app_router.dart';
@@ -24,6 +26,12 @@ class PurchaserList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AppDataCubit, AppDataState>(
       builder: (context, state) {
+        if (state.data.purchaserList.isEmpty) {
+          return NoSomethingYetTile(
+            title: context.loc.noPeopleTitle,
+            description: context.loc.noPeopleDescription,
+          );
+        }
         return ValueListenableBuilder(
           valueListenable: searchController,
           builder: (context, value, child) {

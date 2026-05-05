@@ -31,6 +31,13 @@ class SearchWithStats extends StatelessWidget {
             controller: searchController,
             backgroundColor: const WidgetStatePropertyAll(AppColor.card),
             elevation: const WidgetStatePropertyAll(0),
+            hintText: context.loc.search,
+            hintStyle: WidgetStatePropertyAll(
+              TextStyle(
+                fontSize: AppDimens.fontSizeDefault,
+                color: AppColor.foreground,
+              ),
+            ),
 
             onTapOutside: (_) =>
                 WidgetsBinding.instance.focusManager.primaryFocus?.unfocus(),

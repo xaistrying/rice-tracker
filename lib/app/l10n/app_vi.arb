@@ -37,5 +37,15 @@
   "@bag": {},
   "bag": "Bao",
   "@weight": {},
-  "weight": "Khối lượng"
+  "weight": "Khối lượng",
+  "@noPeopleTitle": {},
+  "noPeopleTitle": "Chưa có ai được thêm",
+  "@noPeopleDescription": {},
+  "noPeopleDescription": "Nhấn + để thêm người đầu tiên và theo dõi lượng gạo họ đã mua.",
+  "@noRiceBagTitle": {},
+  "noRiceBagTitle": "Chưa có bao gạo nào",
+  "@noRiceBagDescription": {},
+  "noRiceBagDescription": "Hãy thêm bao đầu tiên để bắt đầu theo dõi.",
+  "@search": {},
+  "search": "Tìm kiếm"
 }

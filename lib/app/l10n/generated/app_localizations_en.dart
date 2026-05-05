@@ -66,4 +66,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weight => 'Weight';
+
+  @override
+  String get noPeopleTitle => 'No one yet';
+
+  @override
+  String get noPeopleDescription =>
+      'Tap + to add your first person and track how much rice they bought.';
+
+  @override
+  String get noRiceBagTitle => 'No rice bags yet';
+
+  @override
+  String get noRiceBagDescription =>
+      'Start adding rice bags by entering the amount for each bag.';
+
+  @override
+  String get search => 'Search';
 }

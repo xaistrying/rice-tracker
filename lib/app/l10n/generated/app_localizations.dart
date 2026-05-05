@@ -210,6 +210,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Weight'**
   String get weight;
+
+  /// No description provided for @noPeopleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No one yet'**
+  String get noPeopleTitle;
+
+  /// No description provided for @noPeopleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to add your first person and track how much rice they bought.'**
+  String get noPeopleDescription;
+
+  /// No description provided for @noRiceBagTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No rice bags yet'**
+  String get noRiceBagTitle;
+
+  /// No description provided for @noRiceBagDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Start adding rice bags by entering the amount for each bag.'**
+  String get noRiceBagDescription;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
 }
 
 class _AppLocalizationsDelegate

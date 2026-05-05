@@ -9,6 +9,7 @@ import 'package:rice_tracker/app/extension/context_extension.dart';
 
 // Project imports:
 import 'package:rice_tracker/app/theme/app_dimens.dart';
+import 'package:rice_tracker/app/widgets/no_something_yet_tile.dart';
 import 'package:rice_tracker/presentation/purchaser_details/cubit/selected_item_cubit.dart';
 import '../../../app/bloc/app_data/app_data_cubit.dart';
 import '../../../app/constants/image_constant.dart';
@@ -28,7 +29,13 @@ class BagList extends StatelessWidget {
         builder: (context, state) {
           final bags = purchaser.listOfRiceBagWeights ?? [];
           final int numberOfBags = bags.length;
-          if (numberOfBags == 0) return const SizedBox.shrink();
+
+          if (numberOfBags == 0) {
+            return NoSomethingYetTile(
+              title: context.loc.noRiceBagTitle,
+              description: context.loc.noRiceBagDescription,
+            );
+          }
 
           final int rows = (numberOfBags + 2) ~/ 3;
           return ListView.separated(
