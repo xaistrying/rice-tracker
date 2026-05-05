@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rice_tracker/app/extension/context_extension.dart';
 
 // Project imports:
 import 'package:rice_tracker/app/theme/app_dimens.dart';
@@ -25,11 +26,9 @@ class BagList extends StatelessWidget {
     return Expanded(
       child: BlocBuilder<AppDataCubit, AppDataState>(
         builder: (context, state) {
-          final int numberOfBags =
-              purchaser.quantity ?? purchaser.listOfRiceBagWeights?.length ?? 0;
-          if (numberOfBags == 0) {
-            return const SizedBox.shrink();
-          }
+          final bags = purchaser.listOfRiceBagWeights ?? [];
+          final int numberOfBags = bags.length;
+          if (numberOfBags == 0) return const SizedBox.shrink();
 
           final int rows = (numberOfBags + 2) ~/ 3;
           return ListView.separated(
@@ -38,158 +37,16 @@ class BagList extends StatelessWidget {
               horizontal: AppDimens.padding16,
             ),
             itemBuilder: (context, rowIndex) {
-              final int start = rowIndex * 3;
+              final start = rowIndex * 3;
               return Row(
                 spacing: AppDimens.padding8,
                 children: List.generate(3, (colIndex) {
-                  final int idx = start + colIndex;
+                  final idx = start + colIndex;
                   if (idx >= numberOfBags) {
-                    // empty slot to keep spacing
                     return const Expanded(child: SizedBox());
                   }
-
-                  // safe access to BagModel weight
-                  final List<BagModel> bags =
-                      purchaser.listOfRiceBagWeights ?? [];
-                  final double weight = idx < bags.length
-                      ? (bags[idx].weight ?? 0.0)
-                      : 0.0;
-
                   return Expanded(
-                    child: BlocBuilder<SelectedItemCubit, SelectedItemState>(
-                      builder: (context, state) {
-                        return GestureDetector(
-                          onTap: () {
-                            context
-                                .read<SelectedItemCubit>()
-                                .updateSelectedItem(id: bags[idx].id);
-                            showModalBottomSheet(
-                              context: context,
-                              backgroundColor: AppColor.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  AppDimens.borderRadius8,
-                                ),
-                              ),
-                              barrierColor: AppColor.barrierColor,
-                              builder: (context) => Container(
-                                width: double.maxFinite,
-                                padding: const EdgeInsets.all(
-                                  AppDimens.padding16,
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  spacing: AppDimens.padding12,
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        'Bag ${idx + 1}',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: AppDimens.fontSize16,
-                                          color: AppColor.foreground,
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: AppDimens.padding16,
-                                        vertical: AppDimens.padding12,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: AppColor.border,
-                                        border: Border.all(
-                                          color: AppColor.grey,
-                                        ),
-                                        borderRadius: BorderRadius.circular(
-                                          AppDimens.borderRadius8,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            'Weight:',
-                                            style: const TextStyle(
-                                              fontSize:
-                                                  AppDimens.fontSizeDefault,
-                                              color: AppColor.foreground,
-                                            ),
-                                          ),
-                                          Spacer(),
-                                          Text(
-                                            '${weight.toStringAsFixed(1)} kg',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize:
-                                                  AppDimens.fontSizeDefault,
-                                              color: AppColor.foreground,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: double.maxFinite,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          context
-                                              .read<AppDataCubit>()
-                                              .removeBagFromPurchaser(
-                                                purchaserId: purchaser.id,
-                                                bagId: bags[idx].id,
-                                              );
-                                          context.pop();
-                                        },
-                                        style: IconButton.styleFrom(
-                                          backgroundColor: Colors.transparent,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: AppDimens.padding16,
-                                            vertical: AppDimens.padding12,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              AppDimens.borderRadius8,
-                                            ),
-                                          ),
-                                          side: BorderSide(
-                                            width: AppDimens.borderWidth1,
-                                            color: AppColor.destructive,
-                                          ),
-                                          splashFactory: NoSplash.splashFactory,
-                                          overlayColor: Colors.transparent,
-                                        ),
-                                        icon: SvgPicture.asset(
-                                          ImageConstant.delete,
-                                          colorFilter: const ColorFilter.mode(
-                                            AppColor.destructive,
-                                            BlendMode.srcIn,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ).then((_) {
-                              if (context.mounted) {
-                                context
-                                    .read<SelectedItemCubit>()
-                                    .updateSelectedItem(id: null);
-                              }
-                            });
-                          },
-                          child: BagItem(
-                            weight: weight.toStringAsFixed(1),
-                            isSelected:
-                                state.data.selectedItemId == bags[idx].id,
-                          ),
-                        );
-                      },
-                    ),
+                    child: _buildBagCell(context, purchaser, bags, idx),
                   );
                 }),
               );
@@ -200,6 +57,148 @@ class BagList extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget _buildBagCell(
+    BuildContext context,
+    PurchaserModel purchaser,
+    List<BagModel> bags,
+    int idx,
+  ) {
+    final bag = bags[idx];
+    final weight = bag.weight ?? 0.0;
+
+    return BlocBuilder<SelectedItemCubit, SelectedItemState>(
+      builder: (context, selState) {
+        final selectedId = selState.when(
+          initialState: (d) => d.selectedItemId,
+          updateSelectedItem: (d) => d.selectedItemId,
+        );
+        final isSelected = selectedId == bag.id;
+
+        return GestureDetector(
+          onTap: () {
+            WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
+            context.read<SelectedItemCubit>().updateSelectedItem(id: bag.id);
+            _showBagOptions(context, purchaser, bag, idx);
+          },
+          child: BagItem(
+            weight: weight.toStringAsFixed(1),
+            isSelected: isSelected,
+          ),
+        );
+      },
+    );
+  }
+
+  void _showBagOptions(
+    BuildContext context,
+    PurchaserModel purchaser,
+    BagModel bag,
+    int idx,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColor.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
+      ),
+      barrierColor: AppColor.barrierColor,
+      builder: (context) => Container(
+        width: double.maxFinite,
+        padding: const EdgeInsets.all(AppDimens.padding16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppDimens.padding12,
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                '${context.loc.bag} ${idx + 1}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: AppDimens.fontSize16,
+                  color: AppColor.foreground,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimens.padding16,
+                vertical: AppDimens.padding12,
+              ),
+              decoration: BoxDecoration(
+                color: AppColor.border,
+                border: Border.all(color: AppColor.grey),
+                borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    '${context.loc.weight}:',
+                    style: const TextStyle(
+                      fontSize: AppDimens.fontSizeDefault,
+                      color: AppColor.foreground,
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    '${(bag.weight ?? 0.0).toStringAsFixed(1)} kg',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: AppDimens.fontSizeDefault,
+                      color: AppColor.foreground,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: double.maxFinite,
+              child: IconButton(
+                onPressed: () {
+                  context.read<AppDataCubit>().removeBagFromPurchaser(
+                    purchaserId: purchaser.id,
+                    bagId: bag.id,
+                  );
+                  context.pop();
+                },
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppDimens.padding16,
+                    vertical: AppDimens.padding12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      AppDimens.borderRadius8,
+                    ),
+                  ),
+                  side: BorderSide(
+                    width: AppDimens.borderWidth1,
+                    color: AppColor.destructive,
+                  ),
+                  splashFactory: NoSplash.splashFactory,
+                  overlayColor: Colors.transparent,
+                ),
+                icon: SvgPicture.asset(
+                  ImageConstant.delete,
+                  colorFilter: const ColorFilter.mode(
+                    AppColor.destructive,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ).then((_) {
+      if (context.mounted) {
+        context.read<SelectedItemCubit>().updateSelectedItem(id: null);
+      }
+    });
   }
 }
 
@@ -221,7 +220,7 @@ class BagItem extends StatelessWidget {
         color: isSelected ? AppColor.lightPrimary : AppColor.white,
         border: Border.all(
           color: isSelected ? AppColor.primary : AppColor.border,
-          width: 2,
+          width: isSelected ? 2 : 1,
         ),
         borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
       ),

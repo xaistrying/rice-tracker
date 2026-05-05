@@ -16,6 +16,7 @@ class AppTheme {
     textSelectionTheme: const TextSelectionThemeData(
       cursorColor: Colors.black,
       selectionColor: AppColor.selectionColor,
+      selectionHandleColor: AppColor.primary,
     ),
     iconButtonTheme: IconButtonThemeData(style: ButtonStyle()),
   );

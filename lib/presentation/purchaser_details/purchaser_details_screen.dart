@@ -21,16 +21,14 @@ class PurchaserDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SelectedItemCubit(),
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBarCustom(purchaser: purchaser),
-          body: Column(
-            spacing: AppDimens.padding16,
-            children: [
-              BagList(purchaser: purchaser),
-              RiceInputWithStats(purchaser: purchaser),
-            ],
-          ),
+      child: Scaffold(
+        appBar: AppBarCustom(purchaser: purchaser),
+        body: Column(
+          spacing: AppDimens.padding16,
+          children: [
+            BagList(purchaser: purchaser),
+            RiceInputWithStats(purchaser: purchaser),
+          ],
         ),
       ),
     );

@@ -43,6 +43,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Nhập tên người bạn muốn theo dõi số gạo';
 
   @override
+  String get enterNewNameDialogDescription =>
+      'Nhập tên mới để thay thế tên hiện tại.';
+
+  @override
   String get enterName => 'Nhập tên...';
 
   @override
@@ -53,5 +57,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Sau khi xóa, bạn sẽ không thể khôi phục.';
 
   @override
-  String get enterAnAmount => 'Nhập số khối lượng......';
+  String get enterAnAmount => 'Nhập khối lượng gạo...';
+
+  @override
+  String get bags => 'bao';
+
+  @override
+  String get bag => 'Bao';
+
+  @override
+  String get weight => 'Khối lượng';
 }

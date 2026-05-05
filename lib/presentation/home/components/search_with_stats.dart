@@ -26,10 +26,14 @@ class SearchWithStats extends StatelessWidget {
       child: Column(
         spacing: AppDimens.padding16,
         children: [
+          // Search Bar
           SearchBar(
             controller: searchController,
             backgroundColor: const WidgetStatePropertyAll(AppColor.card),
             elevation: const WidgetStatePropertyAll(0),
+
+            onTapOutside: (_) =>
+                WidgetsBinding.instance.focusManager.primaryFocus?.unfocus(),
 
             leading: SvgPicture.asset(
               ImageConstant.search,
@@ -68,6 +72,8 @@ class SearchWithStats extends StatelessWidget {
               ),
             ),
           ),
+
+          // Stats
           BlocBuilder<AppDataCubit, AppDataState>(
             builder: (context, state) {
               final purchaserList = state.data.purchaserList;
@@ -83,11 +89,16 @@ class SearchWithStats extends StatelessWidget {
                       state.data.purchaserList;
                   if (value.text != '') {
                     filterdPurchaserList = purchaserList
-                        .where((e) => (e.name ?? '').contains(value.text))
+                        .where(
+                          (e) => (e.name ?? '').toLowerCase().contains(
+                            value.text.toLowerCase(),
+                          ),
+                        )
                         .toList();
                   }
                   return Row(
                     children: [
+                      // Number of people
                       RichText(
                         text: TextSpan(
                           children: [
@@ -124,7 +135,10 @@ class SearchWithStats extends StatelessWidget {
                           ],
                         ),
                       ),
+
                       Spacer(),
+
+                      // Grand Total
                       RichText(
                         maxLines: 1,
                         text: TextSpan(

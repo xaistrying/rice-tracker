@@ -22,6 +22,8 @@
   "enterNameDialogTitle": "Thêm người mới",
   "@enterNameDialogDescription": {},
   "enterNameDialogDescription": "Nhập tên người bạn muốn theo dõi số gạo",
+  "@enterNewNameDialogDescription": {},
+  "enterNewNameDialogDescription": "Nhập tên mới để thay thế tên hiện tại.",
   "@enterName": {},
   "enterName": "Nhập tên...",
   "@deleteItemTitle": {},
@@ -29,5 +31,11 @@
   "@deleteItemDescription": {},
   "deleteItemDescription": "Sau khi xóa, bạn sẽ không thể khôi phục.",
   "@enterAnAmount": {},
-  "enterAnAmount": "Nhập số khối lượng......"
+  "enterAnAmount": "Nhập khối lượng gạo...",
+  "@bags": {},
+  "bags": "bao",
+  "@bag": {},
+  "bag": "Bao",
+  "@weight": {},
+  "weight": "Khối lượng"
 }

@@ -22,6 +22,8 @@
   "enterNameDialogTitle": "Add New Person",
   "@enterNameDialogDescription": {},
   "enterNameDialogDescription": "Enter the name of the person to track their rice.",
+  "@enterNewNameDialogDescription": {},
+  "enterNewNameDialogDescription": "Enter a new name to replace the current one.",
   "@enterName": {},
   "enterName": "Enter name...",
   "@deleteItemTitle": {},
@@ -29,5 +31,11 @@
   "@deleteItemDescription": {},
   "deleteItemDescription": "Once deleted, it can’t be recovered.",
   "@enterAnAmount": {},
-  "enterAnAmount": "Enter an amount..."
+  "enterAnAmount": "Enter an amount...",
+  "@bags": {},
+  "bags": "bags",
+  "@bag": {},
+  "bag": "Bag",
+  "@weight": {},
+  "weight": "Weight"
 }

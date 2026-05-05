@@ -28,20 +28,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: const AppBarCustom(),
-        floatingActionButton: FloatingActionButtonCustom(
-          controller: nameController,
-        ),
-        body: Column(
-          spacing: AppDimens.padding16,
-          children: [
-            SearchWithStats(searchController: searchController),
-            Expanded(child: PurchaserList(searchController: searchController)),
-            SizedBox(),
-          ],
-        ),
+    return Scaffold(
+      appBar: const AppBarCustom(),
+      floatingActionButton: FloatingActionButtonCustom(
+        controller: nameController,
+      ),
+      body: Column(
+        spacing: AppDimens.padding16,
+        children: [
+          SearchWithStats(searchController: searchController),
+          Expanded(child: PurchaserList(searchController: searchController)),
+          SizedBox(),
+        ],
       ),
     );
   }

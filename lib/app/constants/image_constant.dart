@@ -9,4 +9,5 @@ class ImageConstant {
   static const String rightArrow = 'assets/icons/right_arrow.svg';
   static const String add = 'assets/icons/add.svg';
   static const String delete = 'assets/icons/delete.svg';
+  static const String plus = 'assets/icons/plus_fill.svg';
 }

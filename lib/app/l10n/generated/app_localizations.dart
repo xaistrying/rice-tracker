@@ -163,6 +163,12 @@ abstract class AppLocalizations {
   /// **'Enter the name of the person to track their rice.'**
   String get enterNameDialogDescription;
 
+  /// No description provided for @enterNewNameDialogDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a new name to replace the current one.'**
+  String get enterNewNameDialogDescription;
+
   /// No description provided for @enterName.
   ///
   /// In en, this message translates to:
@@ -186,6 +192,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter an amount...'**
   String get enterAnAmount;
+
+  /// No description provided for @bags.
+  ///
+  /// In en, this message translates to:
+  /// **'bags'**
+  String get bags;
+
+  /// No description provided for @bag.
+  ///
+  /// In en, this message translates to:
+  /// **'Bag'**
+  String get bag;
+
+  /// No description provided for @weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
 }
 
 class _AppLocalizationsDelegate

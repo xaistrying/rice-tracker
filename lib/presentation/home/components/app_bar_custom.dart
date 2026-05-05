@@ -21,11 +21,12 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      scrolledUnderElevation: 0.0,
+
       titleSpacing: AppDimens.padding16,
       actionsPadding: const EdgeInsets.symmetric(
         horizontal: AppDimens.padding16,
       ),
-      scrolledUnderElevation: 0.0,
 
       leading: Container(
         margin: const EdgeInsets.only(
@@ -35,10 +36,12 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
           right: 0.0,
         ),
         padding: const EdgeInsets.all(AppDimens.padding8),
+
         decoration: BoxDecoration(
           color: AppColor.primary,
           borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
         ),
+
         child: SvgPicture.asset(
           ImageConstant.wheat,
           colorFilter: const ColorFilter.mode(AppColor.black, BlendMode.srcIn),

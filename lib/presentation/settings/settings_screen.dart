@@ -18,76 +18,74 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          titleSpacing: AppDimens.padding16,
-          actionsPadding: const EdgeInsets.symmetric(
-            horizontal: AppDimens.padding16,
-          ),
-          scrolledUnderElevation: 0.0,
+    return Scaffold(
+      appBar: AppBar(
+        titleSpacing: AppDimens.padding16,
+        actionsPadding: const EdgeInsets.symmetric(
+          horizontal: AppDimens.padding16,
+        ),
+        scrolledUnderElevation: 0.0,
 
-          leading: Padding(
-            padding: const EdgeInsets.only(
-              left: AppDimens.padding16,
-              top: AppDimens.padding8,
-              bottom: AppDimens.padding8,
-              right: 0.0,
-            ),
-            child: InkWell(
-              onTap: () => Navigator.pop(context),
-              borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
-              highlightColor: AppColor.primary,
-              hoverColor: AppColor.selectionColor,
-              child: Container(
-                padding: const EdgeInsets.all(AppDimens.padding8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
-                ),
-                child: Icon(Icons.arrow_back_rounded, color: AppColor.black),
+        leading: Padding(
+          padding: const EdgeInsets.only(
+            left: AppDimens.padding16,
+            top: AppDimens.padding8,
+            bottom: AppDimens.padding8,
+            right: 0.0,
+          ),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
+            highlightColor: AppColor.primary,
+            hoverColor: AppColor.selectionColor,
+            child: Container(
+              padding: const EdgeInsets.all(AppDimens.padding8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
               ),
-            ),
-          ),
-
-          title: Text(
-            context.loc.settings,
-            style: TextStyle(
-              fontSize: AppDimens.fontSize20,
-              fontWeight: FontWeight.bold,
+              child: Icon(Icons.arrow_back_rounded, color: AppColor.black),
             ),
           ),
         ),
-        body: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: AppDimens.padding16),
-          children: [
-            CardWidget(
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  context.loc.languages,
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSize16,
-                    color: AppColor.black,
-                  ),
-                ),
-                trailing: BlocBuilder<AppConfigCubit, AppConfigState>(
-                  builder: (context, state) {
-                    return SegmentedButtonWidget(
-                      values: AppLocalizations.supportedLocales
-                          .map((e) => e.languageCode)
-                          .toList(),
-                      selected: {state.data.locale.toString()},
-                      onSelectionChanged: (newSelection) => context
-                          .read<AppConfigCubit>()
-                          .updateLocale(Locale(newSelection.first)),
-                    );
-                  },
+
+        title: Text(
+          context.loc.settings,
+          style: TextStyle(
+            fontSize: AppDimens.fontSize20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: AppDimens.padding16),
+        children: [
+          CardWidget(
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                context.loc.languages,
+                style: TextStyle(
+                  fontSize: AppDimens.fontSize16,
+                  color: AppColor.black,
                 ),
               ),
+              trailing: BlocBuilder<AppConfigCubit, AppConfigState>(
+                builder: (context, state) {
+                  return SegmentedButtonWidget(
+                    values: AppLocalizations.supportedLocales
+                        .map((e) => e.languageCode)
+                        .toList(),
+                    selected: {state.data.locale.toString()},
+                    onSelectionChanged: (newSelection) => context
+                        .read<AppConfigCubit>()
+                        .updateLocale(Locale(newSelection.first)),
+                  );
+                },
+              ),
             ),
-            SizedBox(height: AppDimens.padding16),
-          ],
-        ),
+          ),
+          SizedBox(height: AppDimens.padding16),
+        ],
       ),
     );
   }

@@ -30,7 +30,11 @@ class PurchaserList extends StatelessWidget {
             List<PurchaserModel> purchaserList = state.data.purchaserList;
             if (value.text != '') {
               purchaserList = purchaserList
-                  .where((e) => (e.name ?? '').contains(value.text))
+                  .where(
+                    (e) => (e.name ?? '').toLowerCase().contains(
+                      value.text.toLowerCase(),
+                    ),
+                  )
                   .toList();
             }
             return ListView.separated(
@@ -40,6 +44,7 @@ class PurchaserList extends StatelessWidget {
               ),
               itemBuilder: (context, index) {
                 final purchaser = purchaserList[index];
+
                 return CardWidget(
                   padding: EdgeInsets.zero,
                   child: ListTile(
@@ -47,6 +52,7 @@ class PurchaserList extends StatelessWidget {
                       horizontal: AppDimens.padding16,
                       vertical: AppDimens.padding12,
                     ),
+
                     leading: CircleAvatar(
                       backgroundColor: AppColor.lightPrimary,
                       child: SvgPicture.asset(
@@ -97,6 +103,7 @@ class PurchaserList extends StatelessWidget {
                         ),
                       ],
                     ),
+
                     onTap: () {
                       context
                           .push(AppRouter.purchaserDetails, extra: purchaser)

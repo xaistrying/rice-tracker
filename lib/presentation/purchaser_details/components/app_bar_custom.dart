@@ -13,6 +13,7 @@ import '../../../app/constants/image_constant.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
 import '../../../app/widgets/dialog_widget.dart';
+import '../../../app/widgets/text_form_field_widget.dart';
 import '../../../domain/models/purchaser_model.dart';
 
 class AppBarCustom extends StatefulWidget implements PreferredSizeWidget {
@@ -44,6 +45,7 @@ class _AppBarCustomState extends State<AppBarCustom> {
         horizontal: AppDimens.padding16,
       ),
       scrolledUnderElevation: 0.0,
+
       leading: Padding(
         padding: const EdgeInsets.only(
           left: AppDimens.padding16,
@@ -65,20 +67,22 @@ class _AppBarCustomState extends State<AppBarCustom> {
           ),
         ),
       ),
+
       title: GestureDetector(
         onTap: () {
           newNameController.text = widget.purchaser.name ?? '';
+
           showDialog(
             context: context,
             builder: (context) => ValueListenableBuilder(
               valueListenable: newNameController,
               builder: (context, value, child) => DialogWidget(
                 isConfirmButtonDisable: newNameController.text == '',
-                title: 'Edit Name',
+                title: context.loc.enterNameDialogTitle,
                 body: Column(
                   children: [
                     Text(
-                      'Enter a new name to replace the current one.',
+                      context.loc.enterNewNameDialogDescription,
                       style: TextStyle(
                         fontSize: AppDimens.fontSizeDefault,
                         color: AppColor.foreground,
@@ -89,7 +93,7 @@ class _AppBarCustomState extends State<AppBarCustom> {
                     Align(
                       alignment: AlignmentGeometry.centerLeft,
                       child: Text(
-                        'Name',
+                        context.loc.name,
                         style: TextStyle(
                           fontSize: AppDimens.fontSizeDefault,
                           fontWeight: FontWeight.bold,
@@ -98,54 +102,9 @@ class _AppBarCustomState extends State<AppBarCustom> {
                       ),
                     ),
                     SizedBox(height: AppDimens.padding4),
-                    TextFormField(
+                    TextFormFieldWidget(
                       controller: newNameController,
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeDefault,
-                        color: AppColor.black,
-                      ),
-                      decoration: InputDecoration(
-                        hint: Text(
-                          'Enter name...',
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSizeDefault,
-                            color: AppColor.foreground,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AppDimens.borderRadius8,
-                          ),
-                          borderSide: BorderSide(color: AppColor.border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AppDimens.borderRadius8,
-                          ),
-                          borderSide: BorderSide(
-                            color: AppColor.primary,
-                            width: 2,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AppDimens.borderRadius8,
-                          ),
-                          borderSide: BorderSide(
-                            color: AppColor.destructive,
-                            width: 1,
-                          ),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            AppDimens.borderRadius8,
-                          ),
-                          borderSide: BorderSide(
-                            color: AppColor.destructive,
-                            width: 2,
-                          ),
-                        ),
-                      ),
+                      hintText: context.loc.enterName,
                     ),
                   ],
                 ),
@@ -180,31 +139,32 @@ class _AppBarCustomState extends State<AppBarCustom> {
 
       actions: [
         IconButton(
-          onPressed: () =>
-              showDialog(
-                context: context,
-                builder: (context) => DialogWidget(
-                  title: context.loc.deleteItemTitle,
-                  body: Text(
-                    context.loc.deleteItemDescription,
-                    style: TextStyle(
-                      fontSize: AppDimens.fontSizeDefault,
-                      color: AppColor.foreground,
-                    ),
-                    textAlign: TextAlign.center,
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => DialogWidget(
+                title: context.loc.deleteItemTitle,
+                body: Text(
+                  context.loc.deleteItemDescription,
+                  style: TextStyle(
+                    fontSize: AppDimens.fontSizeDefault,
+                    color: AppColor.foreground,
                   ),
-                  confirmButtonFunc: () {
-                    context.read<AppDataCubit>().removePurchaser(
-                      id: widget.purchaser.id,
-                    );
-                    context.pop(true);
-                  },
+                  textAlign: TextAlign.center,
                 ),
-              ).then((value) {
-                if (context.mounted && value == true) {
-                  context.pop();
-                }
-              }),
+                confirmButtonFunc: () {
+                  context.read<AppDataCubit>().removePurchaser(
+                    id: widget.purchaser.id,
+                  );
+                  context.pop(true);
+                },
+              ),
+            ).then((value) {
+              if (context.mounted && value == true) {
+                context.pop();
+              }
+            });
+          },
           highlightColor: AppColor.primary,
           hoverColor: AppColor.selectionColor,
           icon: SvgPicture.asset(

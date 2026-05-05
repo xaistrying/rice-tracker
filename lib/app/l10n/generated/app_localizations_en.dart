@@ -43,6 +43,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter the name of the person to track their rice.';
 
   @override
+  String get enterNewNameDialogDescription =>
+      'Enter a new name to replace the current one.';
+
+  @override
   String get enterName => 'Enter name...';
 
   @override
@@ -53,4 +57,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterAnAmount => 'Enter an amount...';
+
+  @override
+  String get bags => 'bags';
+
+  @override
+  String get bag => 'Bag';
+
+  @override
+  String get weight => 'Weight';
 }

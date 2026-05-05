@@ -12,6 +12,7 @@ import 'package:rice_tracker/app/extension/context_extension.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
+import '../../../app/widgets/text_form_field_widget.dart';
 import '../../../domain/models/purchaser_model.dart';
 
 class RiceInputWithStats extends StatefulWidget {
@@ -76,7 +77,7 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                                 ),
                               ),
                               TextSpan(
-                                text: ' bags',
+                                text: ' ${context.loc.bags}',
                                 style: TextStyle(
                                   fontSize: AppDimens.fontSizeDefault,
                                   fontWeight: FontWeight.bold,
@@ -140,108 +141,71 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
           ),
 
           // Rice Amount Input
-          Row(
-            spacing: AppDimens.padding8,
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: riceAmountController,
+          IntrinsicHeight(
+            child: Row(
+              spacing: AppDimens.padding8,
 
-                  style: TextStyle(
-                    fontSize: AppDimens.fontSizeDefault,
-                    color: AppColor.black,
-                  ),
+              children: [
+                Expanded(
+                  child: TextFormFieldWidget(
+                    controller: riceAmountController,
+                    onTapOutsideEnabled: false,
 
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
-                    SinglePeriodEnforcer(),
-                  ],
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  textInputAction: TextInputAction.done,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
+                      SinglePeriodEnforcer(),
+                    ],
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    textInputAction: TextInputAction.done,
 
-                  decoration: InputDecoration(
-                    hint: Text(
-                      context.loc.enterAnAmount,
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeDefault,
-                        color: AppColor.foreground,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppDimens.borderRadius8,
-                      ),
-                      borderSide: BorderSide(color: AppColor.border),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppDimens.borderRadius8,
-                      ),
-                      borderSide: BorderSide(color: AppColor.primary, width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppDimens.borderRadius8,
-                      ),
-                      borderSide: BorderSide(
-                        color: AppColor.destructive,
-                        width: 1,
-                      ),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppDimens.borderRadius8,
-                      ),
-                      borderSide: BorderSide(
-                        color: AppColor.destructive,
-                        width: 2,
-                      ),
-                    ),
+                    hintText: context.loc.enterAnAmount,
                   ),
                 ),
-              ),
 
-              // Action Button
-              SizedBox(
-                width: 60,
-                child: ValueListenableBuilder(
-                  valueListenable: riceAmountController,
-                  builder: (context, value, child) => IconButton(
-                    onPressed: () {
-                      context.read<AppDataCubit>().addBagToPurchaser(
-                        id: widget.purchaser.id,
-                        weight: riceAmountController.text,
-                      );
-                      riceAmountController.clear();
-                    },
-                    style: IconButton.styleFrom(
-                      backgroundColor: riceAmountController.text == ''
-                          ? AppColor.lightPrimary
-                          : AppColor.primary,
-                      disabledBackgroundColor: AppColor.lightPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
+                // Action Button
+                SizedBox(
+                  width: 60,
+                  child: ValueListenableBuilder(
+                    valueListenable: riceAmountController,
+                    builder: (context, value, child) => IconButton(
+                      onPressed: () {
+                        context.read<AppDataCubit>().addBagToPurchaser(
+                          id: widget.purchaser.id,
+                          weight: riceAmountController.text,
+                        );
+                        riceAmountController.clear();
+                      },
+                      style: IconButton.styleFrom(
+                        backgroundColor: riceAmountController.text == ''
+                            ? AppColor.lightPrimary
+                            : AppColor.primary,
+                        disabledBackgroundColor: AppColor.lightPrimary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimens.borderRadius8,
+                          ),
                         ),
+                        padding: const EdgeInsets.all(AppDimens.padding16),
+                        splashFactory: NoSplash.splashFactory,
+                        overlayColor: Colors.transparent,
                       ),
-                      padding: const EdgeInsets.all(AppDimens.padding16),
-                      splashFactory: NoSplash.splashFactory,
-                      overlayColor: Colors.transparent,
-                    ),
-                    icon: SvgPicture.asset(
-                      ImageConstant.add,
-                      colorFilter: ColorFilter.mode(
-                        riceAmountController.text == ''
-                            ? AppColor.grey
-                            : AppColor.foreground,
-                        BlendMode.srcIn,
+                      icon: SvgPicture.asset(
+                        ImageConstant.add,
+                        colorFilter: ColorFilter.mode(
+                          riceAmountController.text == ''
+                              ? AppColor.grey
+                              : AppColor.foreground,
+                          BlendMode.srcIn,
+                        ),
+                        height: AppDimens.iconSize20,
                       ),
-                      height: AppDimens.iconSize16,
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
