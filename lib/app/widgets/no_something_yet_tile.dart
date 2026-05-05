@@ -21,6 +21,7 @@ class NoSomethingYetTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        const SizedBox(height: AppDimens.padding20),
         Container(
           width: 48,
           height: 48,
@@ -39,7 +40,7 @@ class NoSomethingYetTile extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppDimens.padding8),
         Text(
           title,
           textAlign: TextAlign.center,
