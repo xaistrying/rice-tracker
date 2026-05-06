@@ -5,6 +5,6 @@ extension DateTimeExtension on DateTime {
   String get uniqueId => microsecondsSinceEpoch.toString();
 
   String toTimeString() {
-    return DateFormat('yyyy/MM/dd HH:mm').format(this);
+    return DateFormat('dd/MM/yyyy HH:mm').format(this);
   }
 }
