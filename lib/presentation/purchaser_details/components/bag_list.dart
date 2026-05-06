@@ -92,6 +92,7 @@ class BagList extends StatelessWidget {
           child: BagItem(
             weight: weight.toStringAsFixed(1),
             isSelected: isSelected,
+            idx: idx,
           ),
         );
       },
@@ -210,54 +211,75 @@ class BagList extends StatelessWidget {
 }
 
 class BagItem extends StatelessWidget {
-  const BagItem({super.key, required this.weight, this.isSelected = false});
+  const BagItem({
+    super.key,
+    required this.weight,
+    this.isSelected = false,
+    required this.idx,
+  });
 
   final String weight;
   final bool isSelected;
+  final int idx;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimens.padding16,
-        vertical: AppDimens.padding12,
-      ),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: isSelected ? AppColor.lightPrimary : AppColor.white,
-        border: Border.all(
-          color: isSelected ? AppColor.primary : AppColor.border,
-          width: 2,
-        ),
-        borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            child: Text(
-              weight,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: AppDimens.fontSizeDefault,
-                color: AppColor.foreground,
+    return Stack(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDimens.padding16,
+            vertical: AppDimens.padding12,
+          ),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isSelected ? AppColor.lightPrimary : AppColor.white,
+            border: Border.all(
+              color: isSelected ? AppColor.primary : AppColor.border,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: Text(
+                  weight,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: AppDimens.fontSizeDefault,
+                    color: AppColor.foreground,
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 4),
+              Text(
+                'kg',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: AppDimens.fontSizeDefault,
+                  color: AppColor.foreground,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 4),
-          Text(
-            'kg',
+        ),
+        Positioned(
+          top: 2,
+          left: AppDimens.padding4,
+          child: Text(
+            '${idx + 1}',
             style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: AppDimens.fontSizeDefault,
-              color: AppColor.foreground,
+              fontSize: AppDimens.fontSizeSmall,
+              color: AppColor.grey,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -87,4 +87,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get search => 'Tìm kiếm';
+
+  @override
+  String get warning => 'Cảnh báo';
+
+  @override
+  String get warningRiceAmountDescription =>
+      'Khối lượng phải nằm trong khoảng từ 0 đến 1000.';
 }

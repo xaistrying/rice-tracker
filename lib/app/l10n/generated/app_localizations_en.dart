@@ -86,4 +86,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get search => 'Search';
+
+  @override
+  String get warning => 'Warning';
+
+  @override
+  String get warningRiceAmountDescription =>
+      'Please enter an amount between 0 and 1000.';
 }

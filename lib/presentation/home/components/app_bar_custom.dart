@@ -44,7 +44,10 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
 
         child: SvgPicture.asset(
           ImageConstant.wheat,
-          colorFilter: const ColorFilter.mode(AppColor.black, BlendMode.srcIn),
+          colorFilter: const ColorFilter.mode(
+            AppColor.lightPrimary,
+            BlendMode.srcIn,
+          ),
         ),
       ),
 

@@ -9,6 +9,7 @@ import 'package:flutter_svg/svg.dart';
 // Project imports:
 import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
 import 'package:rice_tracker/app/extension/context_extension.dart';
+import 'package:rice_tracker/app/widgets/dialog_widget.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
@@ -171,10 +172,28 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                     valueListenable: riceAmountController,
                     builder: (context, value, child) => IconButton(
                       onPressed: () {
-                        context.read<AppDataCubit>().addBagToPurchaser(
-                          id: widget.purchaser.id,
-                          weight: riceAmountController.text,
-                        );
+                        if (double.tryParse(value.text) != null) {
+                          final number = double.parse(value.text);
+
+                          if (number < 0 || number >= 1000) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return DialogWidget(
+                                  title: context.loc.warning,
+                                  body: Text(
+                                    context.loc.warningRiceAmountDescription,
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            context.read<AppDataCubit>().addBagToPurchaser(
+                              id: widget.purchaser.id,
+                              weight: value.text,
+                            );
+                          }
+                        }
                         riceAmountController.clear();
                       },
                       style: IconButton.styleFrom(

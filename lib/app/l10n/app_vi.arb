@@ -49,5 +49,9 @@
   "@noRiceBagDescription": {},
   "noRiceBagDescription": "Hãy thêm bao đầu tiên để bắt đầu theo dõi.",
   "@search": {},
-  "search": "Tìm kiếm"
+  "search": "Tìm kiếm",
+  "@warning": {},
+  "warning": "Cảnh báo",
+  "@warningRiceAmountDescription": {},
+  "warningRiceAmountDescription": "Khối lượng phải nằm trong khoảng từ 0 đến 1000."
 }

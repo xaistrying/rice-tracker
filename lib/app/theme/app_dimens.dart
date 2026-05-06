@@ -14,6 +14,7 @@ class AppDimens {
   static const double padding20 = 20.0;
   static const double padding24 = 24.0;
 
+  static const double fontSizeSmall = 12.0;
   static const double fontSizeDefault = 14.0;
   static const double fontSize16 = 16.0;
   static const double fontSize18 = 18.0;

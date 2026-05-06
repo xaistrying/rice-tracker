@@ -49,5 +49,9 @@
   "@noRiceBagDescription": {},
   "noRiceBagDescription": "Start adding rice bags by entering the amount for each bag.",
   "@search": {},
-  "search": "Search"
+  "search": "Search",
+  "@warning": {},
+  "warning": "Warning",
+  "@warningRiceAmountDescription": {},
+  "warningRiceAmountDescription": "Please enter an amount between 0 and 1000."
 }

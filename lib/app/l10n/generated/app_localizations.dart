@@ -246,6 +246,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search'**
   String get search;
+
+  /// No description provided for @warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warning;
+
+  /// No description provided for @warningRiceAmountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an amount between 0 and 1000.'**
+  String get warningRiceAmountDescription;
 }
 
 class _AppLocalizationsDelegate
