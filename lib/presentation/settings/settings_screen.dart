@@ -66,7 +66,7 @@ class SettingsScreen extends StatelessWidget {
               title: Text(
                 context.loc.languages,
                 style: TextStyle(
-                  fontSize: AppDimens.fontSize16,
+                  fontSize: AppDimens.fontSizeDefault,
                   color: AppColor.black,
                 ),
               ),

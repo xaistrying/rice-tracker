@@ -136,7 +136,7 @@ abstract class AppLocalizations {
   /// No description provided for @grandTotal.
   ///
   /// In en, this message translates to:
-  /// **'Grand Total'**
+  /// **'Grand total'**
   String get grandTotal;
 
   /// No description provided for @people.
@@ -154,7 +154,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterNameDialogTitle.
   ///
   /// In en, this message translates to:
-  /// **'Add New Person'**
+  /// **'Add new person'**
   String get enterNameDialogTitle;
 
   /// No description provided for @enterNameDialogDescription.
@@ -166,7 +166,7 @@ abstract class AppLocalizations {
   /// No description provided for @editName.
   ///
   /// In en, this message translates to:
-  /// **'Edit Name'**
+  /// **'Edit name'**
   String get editName;
 
   /// No description provided for @enterNewNameDialogDescription.

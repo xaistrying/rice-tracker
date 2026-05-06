@@ -27,7 +27,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get add => 'Add';
 
   @override
-  String get grandTotal => 'Grand Total';
+  String get grandTotal => 'Grand total';
 
   @override
   String get people => 'people';
@@ -36,14 +36,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get name => 'Name';
 
   @override
-  String get enterNameDialogTitle => 'Add New Person';
+  String get enterNameDialogTitle => 'Add new person';
 
   @override
   String get enterNameDialogDescription =>
       'Enter the name of the person to track their rice.';
 
   @override
-  String get editName => 'Edit Name';
+  String get editName => 'Edit name';
 
   @override
   String get enterNewNameDialogDescription =>

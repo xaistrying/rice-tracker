@@ -89,7 +89,7 @@ class _DeleteAllPurchaserState extends State<DeleteAllPurchaser> {
           title: Text(
             context.loc.deleteAllPurchaser,
             style: TextStyle(
-              fontSize: AppDimens.fontSize16,
+              fontSize: AppDimens.fontSizeDefault,
               color: AppColor.destructive,
             ),
           ),

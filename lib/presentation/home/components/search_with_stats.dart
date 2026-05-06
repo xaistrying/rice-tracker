@@ -35,7 +35,7 @@ class SearchWithStats extends StatelessWidget {
             hintStyle: WidgetStatePropertyAll(
               TextStyle(
                 fontSize: AppDimens.fontSizeDefault,
-                color: AppColor.foreground,
+                color: AppColor.grey,
               ),
             ),
 

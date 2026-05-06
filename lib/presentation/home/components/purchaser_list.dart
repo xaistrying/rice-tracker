@@ -48,12 +48,12 @@ class PurchaserList extends StatelessWidget {
                   )
                   .toList();
             }
-            // Group filtered purchasers by date (expects format: yyyy/MM/dd HH:mm)
+            // Group filtered purchasers by date
             final Map<String, List<PurchaserModel>> groups = {};
             for (final p in purchaserList) {
               final datePart = (p.dateAdded ?? '')
                   .split(' ')
-                  .first; // yyyy/MM/dd
+                  .first; // dd/MM/yyyy
               groups.putIfAbsent(datePart, () => []).add(p);
             }
 

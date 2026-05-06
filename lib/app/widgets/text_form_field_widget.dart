@@ -49,7 +49,7 @@ class TextFormFieldWidget extends StatelessWidget {
                 hintText ?? '',
                 style: TextStyle(
                   fontSize: AppDimens.fontSizeDefault,
-                  color: AppColor.foreground,
+                  color: AppColor.grey,
                 ),
               ),
         enabledBorder: OutlineInputBorder(
