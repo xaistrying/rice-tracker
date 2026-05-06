@@ -74,7 +74,7 @@ class PurchaserList extends StatelessWidget {
                         builder: (context) {
                           String headerLabel;
                           try {
-                            final dt = DateFormat('yyyy/MM/dd').parse(dateKey);
+                            final dt = DateFormat('dd/MM/yyyy').parse(dateKey);
                             final today = DateTime.now();
                             final dateOnlyNow = DateTime(
                               today.year,
