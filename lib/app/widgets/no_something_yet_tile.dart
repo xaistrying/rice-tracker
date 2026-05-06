@@ -1,6 +1,10 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_svg/svg.dart';
 
+// Project imports:
 import '../constants/image_constant.dart';
 import '../theme/app_color.dart';
 import '../theme/app_dimens.dart';

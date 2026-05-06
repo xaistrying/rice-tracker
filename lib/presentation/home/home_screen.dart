@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:rice_tracker/app/theme/app_dimens.dart';
 import 'package:rice_tracker/presentation/home/components/floating_action_button_custom.dart';
 import 'package:rice_tracker/presentation/home/components/search_with_stats.dart';
 import 'components/app_bar_custom.dart';
@@ -34,11 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: nameController,
       ),
       body: Column(
-        spacing: AppDimens.padding16,
         children: [
           SearchWithStats(searchController: searchController),
           Expanded(child: PurchaserList(searchController: searchController)),
-          SizedBox(),
         ],
       ),
     );

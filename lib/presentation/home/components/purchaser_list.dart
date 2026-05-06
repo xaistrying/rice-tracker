@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 // Project imports:
 import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
@@ -45,82 +47,152 @@ class PurchaserList extends StatelessWidget {
                   )
                   .toList();
             }
-            return ListView.separated(
-              itemCount: purchaserList.length,
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimens.padding16,
-              ),
-              itemBuilder: (context, index) {
-                final purchaser = purchaserList[index];
+            // Group filtered purchasers by date (expects format: yyyy/MM/dd HH:mm)
+            final Map<String, List<PurchaserModel>> groups = {};
+            for (final p in purchaserList) {
+              final datePart = (p.dateAdded ?? '')
+                  .split(' ')
+                  .first; // yyyy/MM/dd
+              groups.putIfAbsent(datePart, () => []).add(p);
+            }
 
-                return CardWidget(
-                  padding: EdgeInsets.zero,
-                  child: ListTile(
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: AppDimens.padding16,
-                      vertical: AppDimens.padding12,
-                    ),
+            final sortedKeys = groups.keys.toList()
+              ..sort((a, b) => b.compareTo(a));
 
-                    leading: CircleAvatar(
-                      backgroundColor: AppColor.lightPrimary,
-                      child: SvgPicture.asset(
-                        ImageConstant.user,
-                        colorFilter: const ColorFilter.mode(
-                          AppColor.primary,
-                          BlendMode.srcIn,
-                        ),
+            return CustomScrollView(
+              slivers: [
+                for (final dateKey in sortedKeys) ...[
+                  SliverStickyHeader(
+                    header: Container(
+                      width: double.maxFinite,
+                      color: AppColor.background,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimens.padding16,
+                        vertical: AppDimens.padding12,
+                      ),
+                      child: Builder(
+                        builder: (context) {
+                          String headerLabel;
+                          try {
+                            final dt = DateFormat('yyyy/MM/dd').parse(dateKey);
+                            final today = DateTime.now();
+                            final dateOnlyNow = DateTime(
+                              today.year,
+                              today.month,
+                              today.day,
+                            );
+                            final dateOnly = DateTime(
+                              dt.year,
+                              dt.month,
+                              dt.day,
+                            );
+                            final diff = dateOnlyNow
+                                .difference(dateOnly)
+                                .inDays;
+                            if (diff == 0) {
+                              headerLabel = context.loc.today;
+                            } else if (diff == 1) {
+                              headerLabel = context.loc.yesterday;
+                            } else {
+                              headerLabel = DateFormat(
+                                'EEEE, dd/MM/yyyy',
+                              ).format(dt);
+                            }
+                          } catch (_) {
+                            headerLabel = dateKey;
+                          }
+                          return Text(
+                            headerLabel,
+                            style: TextStyle(
+                              fontSize: AppDimens.fontSizeDefault,
+                              color: AppColor.foreground,
+                            ),
+                          );
+                        },
                       ),
                     ),
-
-                    title: Text(
-                      purchaser.name ?? '',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: AppDimens.fontSize16,
-                        color: AppColor.black,
-                      ),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final purchaser = groups[dateKey]![index];
+                        return Column(
+                          children: [
+                            CardWidget(
+                              padding: EdgeInsets.zero,
+                              margin: EdgeInsets.symmetric(
+                                horizontal: AppDimens.padding16,
+                              ),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: AppDimens.padding16,
+                                  vertical: AppDimens.padding12,
+                                ),
+                                leading: CircleAvatar(
+                                  backgroundColor: AppColor.lightPrimary,
+                                  child: SvgPicture.asset(
+                                    ImageConstant.user,
+                                    colorFilter: const ColorFilter.mode(
+                                      AppColor.primary,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                ),
+                                title: Text(
+                                  purchaser.name ?? '',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: AppDimens.fontSize16,
+                                    color: AppColor.black,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  purchaser.dateAdded ?? '',
+                                  style: TextStyle(
+                                    fontSize: AppDimens.fontSizeDefault,
+                                    color: AppColor.black,
+                                  ),
+                                ),
+                                trailing: Row(
+                                  spacing: AppDimens.padding12,
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${(purchaser.totalWeight ?? 0).toStringAsFixed(1)} kg',
+                                      style: TextStyle(
+                                        fontSize: AppDimens.fontSize16,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColor.primary,
+                                      ),
+                                    ),
+                                    SvgPicture.asset(
+                                      ImageConstant.rightArrow,
+                                      colorFilter: const ColorFilter.mode(
+                                        AppColor.grey,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  context
+                                      .push(
+                                        AppRouter.purchaserDetails,
+                                        extra: purchaser,
+                                      )
+                                      .then(
+                                        (value) => searchController.clear(),
+                                      );
+                                },
+                              ),
+                            ),
+                            SizedBox(height: AppDimens.padding16),
+                          ],
+                        );
+                      }, childCount: groups[dateKey]!.length),
                     ),
-
-                    subtitle: Text(
-                      purchaser.dateAdded ?? '',
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeDefault,
-                        color: AppColor.black,
-                      ),
-                    ),
-
-                    trailing: Row(
-                      spacing: AppDimens.padding12,
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${(purchaser.totalWeight ?? 0).toStringAsFixed(1)} kg',
-                          style: TextStyle(
-                            fontSize: AppDimens.fontSize16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.primary,
-                          ),
-                        ),
-                        SvgPicture.asset(
-                          ImageConstant.rightArrow,
-                          colorFilter: const ColorFilter.mode(
-                            AppColor.grey,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    onTap: () {
-                      context
-                          .push(AppRouter.purchaserDetails, extra: purchaser)
-                          .then((value) => searchController.clear());
-                    },
                   ),
-                );
-              },
-              separatorBuilder: (_, _) => SizedBox(height: AppDimens.padding16),
+                ],
+              ],
             );
           },
         );

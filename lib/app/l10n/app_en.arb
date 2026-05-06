@@ -53,5 +53,15 @@
   "@warning": {},
   "warning": "Warning",
   "@warningRiceAmountDescription": {},
-  "warningRiceAmountDescription": "Please enter an amount between 0 and 1000."
+  "warningRiceAmountDescription": "Please enter an amount between 0 and 1000.",
+  "@today": {},
+  "today": "Today",
+  "@yesterday": {},
+  "yesterday": "Yesterday",
+  "@deleteAllPurchaser": {},
+  "deleteAllPurchaser": "Delete all purchaser",
+  "@deleteAllPurchaserDialogDescription": {},
+  "deleteAllPurchaserDialogDescription": "This action will permanently delete all purchasers and cannot be undone.",
+  "@deleteAllPurchaserConfirmHinText": {},
+  "deleteAllPurchaserConfirmHinText": "Type DELETE to confirm"
 }

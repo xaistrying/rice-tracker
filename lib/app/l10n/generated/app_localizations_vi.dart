@@ -94,4 +94,20 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get warningRiceAmountDescription =>
       'Khối lượng phải nằm trong khoảng từ 0 đến 1000.';
+
+  @override
+  String get today => 'Hôm nay';
+
+  @override
+  String get yesterday => 'Hôm qua';
+
+  @override
+  String get deleteAllPurchaser => 'Xóa toàn bộ người mua';
+
+  @override
+  String get deleteAllPurchaserDialogDescription =>
+      'Thao tác này sẽ xóa vĩnh viễn toàn bộ dữ liệu người mua và không thể khôi phục.';
+
+  @override
+  String get deleteAllPurchaserConfirmHinText => 'Nhập DELETE để xác nhận';
 }

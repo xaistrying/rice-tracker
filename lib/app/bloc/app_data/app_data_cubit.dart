@@ -149,4 +149,9 @@ class AppDataCubit extends Cubit<AppDataState> {
       UpdatePurchaserList(state.data.copyWith(purchaserList: purchaserList)),
     );
   }
+
+  void deleteAllPurchaser() {
+    _purchaserRepo.cachePurchaserList(purchaserList: []);
+    emit(UpdatePurchaserList(state.data.copyWith(purchaserList: [])));
+  }
 }

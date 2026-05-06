@@ -6,10 +6,11 @@ import '../theme/app_color.dart';
 import '../theme/app_dimens.dart';
 
 class CardWidget extends StatelessWidget {
-  const CardWidget({super.key, required this.child, this.padding});
+  const CardWidget({super.key, required this.child, this.padding, this.margin});
 
   final Widget child;
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +21,7 @@ class CardWidget extends StatelessWidget {
             horizontal: AppDimens.padding16,
             vertical: AppDimens.padding12,
           ),
+      margin: margin,
       decoration: BoxDecoration(
         color: AppColor.card,
         borderRadius: BorderRadius.circular(AppDimens.borderRadius8),

@@ -258,6 +258,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter an amount between 0 and 1000.'**
   String get warningRiceAmountDescription;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @deleteAllPurchaser.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all purchaser'**
+  String get deleteAllPurchaser;
+
+  /// No description provided for @deleteAllPurchaserDialogDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This action will permanently delete all purchasers and cannot be undone.'**
+  String get deleteAllPurchaserDialogDescription;
+
+  /// No description provided for @deleteAllPurchaserConfirmHinText.
+  ///
+  /// In en, this message translates to:
+  /// **'Type DELETE to confirm'**
+  String get deleteAllPurchaserConfirmHinText;
 }
 
 class _AppLocalizationsDelegate

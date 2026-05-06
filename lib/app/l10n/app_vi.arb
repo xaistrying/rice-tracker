@@ -53,5 +53,15 @@
   "@warning": {},
   "warning": "Cảnh báo",
   "@warningRiceAmountDescription": {},
-  "warningRiceAmountDescription": "Khối lượng phải nằm trong khoảng từ 0 đến 1000."
+  "warningRiceAmountDescription": "Khối lượng phải nằm trong khoảng từ 0 đến 1000.",
+  "@today": {},
+  "today": "Hôm nay",
+  "@yesterday": {},
+  "yesterday": "Hôm qua",
+  "@deleteAllPurchaser": {},
+  "deleteAllPurchaser": "Xóa toàn bộ người mua",
+  "@deleteAllPurchaserDialogDescription": {},
+  "deleteAllPurchaserDialogDescription": "Thao tác này sẽ xóa vĩnh viễn toàn bộ dữ liệu người mua và không thể khôi phục.",
+  "@deleteAllPurchaserConfirmHinText": {},
+  "deleteAllPurchaserConfirmHinText": "Nhập DELETE để xác nhận"
 }

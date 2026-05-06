@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rice_tracker/app/bloc/app_config/app_config_cubit.dart';
 import 'package:rice_tracker/app/l10n/generated/app_localizations.dart';
 import 'package:rice_tracker/app/widgets/card_widget.dart';
+import 'package:rice_tracker/presentation/settings/features/delete_all_purchaser.dart';
 import '../../app/extension/context_extension.dart';
 import '../../app/theme/app_color.dart';
 import '../../app/theme/app_dimens.dart';
@@ -84,6 +85,9 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: AppDimens.padding16),
+
+          DeleteAllPurchaser(),
           SizedBox(height: AppDimens.padding16),
         ],
       ),

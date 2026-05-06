@@ -93,4 +93,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get warningRiceAmountDescription =>
       'Please enter an amount between 0 and 1000.';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get deleteAllPurchaser => 'Delete all purchaser';
+
+  @override
+  String get deleteAllPurchaserDialogDescription =>
+      'This action will permanently delete all purchasers and cannot be undone.';
+
+  @override
+  String get deleteAllPurchaserConfirmHinText => 'Type DELETE to confirm';
 }
