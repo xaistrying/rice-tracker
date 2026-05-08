@@ -101,7 +101,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yesterday => 'Yesterday';
 
   @override
-  String get deleteAllPurchaser => 'Delete all purchaser';
+  String get deleteAllPurchaser => 'Delete all purchasers';
 
   @override
   String get deleteAllPurchaserDialogDescription =>

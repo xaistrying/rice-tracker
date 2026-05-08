@@ -274,7 +274,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteAllPurchaser.
   ///
   /// In en, this message translates to:
-  /// **'Delete all purchaser'**
+  /// **'Delete all purchasers'**
   String get deleteAllPurchaser;
 
   /// No description provided for @deleteAllPurchaserDialogDescription.

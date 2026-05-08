@@ -59,7 +59,7 @@
   "@yesterday": {},
   "yesterday": "Yesterday",
   "@deleteAllPurchaser": {},
-  "deleteAllPurchaser": "Delete all purchaser",
+  "deleteAllPurchaser": "Delete all purchasers",
   "@deleteAllPurchaserDialogDescription": {},
   "deleteAllPurchaserDialogDescription": "This action will permanently delete all purchasers and cannot be undone.",
   "@deleteAllPurchaserConfirmHinText": {},
