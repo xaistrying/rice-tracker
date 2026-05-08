@@ -154,4 +154,27 @@ class AppDataCubit extends Cubit<AppDataState> {
     _purchaserRepo.cachePurchaserList(purchaserList: []);
     emit(UpdatePurchaserList(state.data.copyWith(purchaserList: [])));
   }
+
+  void updateIfNewDay() {
+    emit(UpdateInProgress(state.data));
+
+    final date = _purchaserRepo.getDate().getOrElse((_) => '');
+
+    if (date == '') {
+      _purchaserRepo.cacheDate(date: DateTime.now().toIso8601String());
+      return;
+    }
+
+    DateTime parsedDate = DateTime.parse(date);
+
+    final isNewDay =
+        parsedDate.year != DateTime.now().year ||
+        parsedDate.month != DateTime.now().month ||
+        parsedDate.day != DateTime.now().day;
+
+    if (isNewDay) {
+      emit(UpdatePurchaserList(state.data));
+      _purchaserRepo.cacheDate(date: DateTime.now().toIso8601String());
+    }
+  }
 }

@@ -32,4 +32,24 @@ class PurchaserRepositoryImpl implements PurchaserRepository {
       return Left(Failure(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> cacheDate({required String date}) async {
+    try {
+      _dataSource.cacheDate(date: date);
+      return const Right(null);
+    } catch (e) {
+      return Left(Failure(message: e.toString()));
+    }
+  }
+
+  @override
+  Either<Failure, String> getDate() {
+    try {
+      final res = _dataSource.getDate();
+      return Right(res);
+    } catch (e) {
+      return Left(Failure(message: e.toString()));
+    }
+  }
 }

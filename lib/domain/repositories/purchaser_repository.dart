@@ -10,4 +10,7 @@ abstract class PurchaserRepository {
   Future<Either<Failure, void>> cachePurchaserList({
     required List<PurchaserModel> purchaserList,
   });
+
+  Either<Failure, String> getDate();
+  Future<Either<Failure, void>> cacheDate({required String date});
 }

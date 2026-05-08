@@ -7,9 +7,9 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:rice_tracker/app/bloc/app_config/app_config_cubit.dart';
 
 // Project imports:
+import 'package:rice_tracker/app/bloc/app_config/app_config_cubit.dart';
 import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
 import 'package:rice_tracker/app/extension/context_extension.dart';
 import 'package:rice_tracker/app/theme/app_dimens.dart';
@@ -28,6 +28,7 @@ class PurchaserList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppDataCubit, AppDataState>(
+      buildWhen: (previous, current) => current is UpdatePurchaserList,
       builder: (context, state) {
         if (state.data.purchaserList.isEmpty) {
           return NoSomethingYetTile(
