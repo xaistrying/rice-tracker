@@ -19,6 +19,8 @@ class AppTheme {
       selectionHandleColor: AppColor.primary,
     ),
     iconButtonTheme: IconButtonThemeData(style: ButtonStyle()),
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
   );
 
   static final _darkTheme = ThemeData(

@@ -43,6 +43,7 @@ class BagList extends StatelessWidget {
             padding: const EdgeInsets.symmetric(
               horizontal: AppDimens.padding16,
             ),
+            physics: ClampingScrollPhysics(),
             itemBuilder: (context, rowIndex) {
               final start = rowIndex * 3;
               return Row(

@@ -56,7 +56,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteItemTitle => 'Delete this item?';
 
   @override
-  String get deleteItemDescription => 'Once deleted, it can’t be recovered.';
+  String get deleteItemDescription => 'Once deleted, it can\'t be recovered.';
 
   @override
   String get enterAnAmount => 'Enter an amount...';

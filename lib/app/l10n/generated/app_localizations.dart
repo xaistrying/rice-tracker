@@ -190,7 +190,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteItemDescription.
   ///
   /// In en, this message translates to:
-  /// **'Once deleted, it can’t be recovered.'**
+  /// **'Once deleted, it can\'t be recovered.'**
   String get deleteItemDescription;
 
   /// No description provided for @enterAnAmount.

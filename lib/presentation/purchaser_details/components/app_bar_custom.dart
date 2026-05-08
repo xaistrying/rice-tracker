@@ -1,5 +1,6 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // Package imports:
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,6 +46,12 @@ class _AppBarCustomState extends State<AppBarCustom> {
         horizontal: AppDimens.padding16,
       ),
       scrolledUnderElevation: 0.0,
+
+      systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarIconBrightness: Brightness.dark, // Android
+        statusBarBrightness: Brightness.light, // iOS
+        statusBarColor: Colors.transparent,
+      ),
 
       leading: Padding(
         padding: const EdgeInsets.only(

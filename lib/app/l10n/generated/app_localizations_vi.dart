@@ -9,7 +9,7 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
-  String get appTitle => 'Sổ Gạo';
+  String get appTitle => 'Sổ Lúa';
 
   @override
   String get settings => 'Cài đặt';
@@ -40,7 +40,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get enterNameDialogDescription =>
-      'Nhập tên người bạn muốn theo dõi số gạo';
+      'Nhập tên người bạn muốn theo dõi số lúa';
 
   @override
   String get editName => 'Thay đổi tên';
@@ -53,14 +53,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get enterName => 'Nhập tên...';
 
   @override
-  String get deleteItemTitle => 'Xóa người mua này?';
+  String get deleteItemTitle => 'Xóa người giao dịch này?';
 
   @override
   String get deleteItemDescription =>
       'Sau khi xóa, bạn sẽ không thể khôi phục.';
 
   @override
-  String get enterAnAmount => 'Nhập khối lượng gạo...';
+  String get enterAnAmount => 'Nhập khối lượng bao...';
 
   @override
   String get bags => 'bao';
@@ -76,10 +76,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noPeopleDescription =>
-      'Nhấn + để thêm người đầu tiên và theo dõi lượng gạo họ đã mua.';
+      'Nhấn + để thêm người đầu tiên và theo dõi lượng bao lúa họ đã giao dịch.';
 
   @override
-  String get noRiceBagTitle => 'Chưa có bao gạo nào';
+  String get noRiceBagTitle => 'Chưa có bao lúa nào';
 
   @override
   String get noRiceBagDescription =>
@@ -102,11 +102,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get yesterday => 'Hôm qua';
 
   @override
-  String get deleteAllPurchaser => 'Xóa toàn bộ người mua';
+  String get deleteAllPurchaser => 'Xóa toàn bộ người giao dịch';
 
   @override
   String get deleteAllPurchaserDialogDescription =>
-      'Thao tác này sẽ xóa vĩnh viễn toàn bộ dữ liệu người mua và không thể khôi phục.';
+      'Thao tác này sẽ xóa vĩnh viễn toàn bộ dữ liệu người giao dịch và không thể khôi phục.';
 
   @override
   String get deleteAllPurchaserConfirmHinText => 'Nhập DELETE để xác nhận';

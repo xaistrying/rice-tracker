@@ -31,7 +31,7 @@
   "@deleteItemTitle": {},
   "deleteItemTitle": "Delete this item?",
   "@deleteItemDescription": {},
-  "deleteItemDescription": "Once deleted, it can’t be recovered.",
+  "deleteItemDescription": "Once deleted, it can't be recovered.",
   "@enterAnAmount": {},
   "enterAnAmount": "Enter an amount...",
   "@bags": {},

@@ -61,6 +61,9 @@ class PurchaserList extends StatelessWidget {
               ..sort((a, b) => b.compareTo(a));
 
             return CustomScrollView(
+              scrollBehavior: ScrollConfiguration.of(
+                context,
+              ).copyWith(overscroll: false),
               slivers: [
                 for (final dateKey in sortedKeys) ...[
                   SliverStickyHeader(
@@ -127,6 +130,9 @@ class PurchaserList extends StatelessWidget {
                                   horizontal: AppDimens.padding16,
                                   vertical: AppDimens.padding12,
                                 ),
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
                                 leading: CircleAvatar(
                                   backgroundColor: AppColor.lightPrimary,
                                   child: SvgPicture.asset(

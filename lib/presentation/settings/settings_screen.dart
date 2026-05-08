@@ -1,5 +1,6 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // Package imports:
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,12 @@ class SettingsScreen extends StatelessWidget {
           horizontal: AppDimens.padding16,
         ),
         scrolledUnderElevation: 0.0,
+
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarIconBrightness: Brightness.dark, // Android
+          statusBarBrightness: Brightness.light, // iOS
+          statusBarColor: Colors.transparent,
+        ),
 
         leading: Padding(
           padding: const EdgeInsets.only(
@@ -59,6 +66,7 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: AppDimens.padding16),
+        physics: ClampingScrollPhysics(),
         children: [
           CardWidget(
             child: ListTile(
