@@ -163,4 +163,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get dismiss => 'Đóng';
+
+  @override
+  String get reportTitle => 'Báo cáo giao lúa';
+
+  @override
+  String get reportPurchaser => 'Người giao dịch';
+
+  @override
+  String get reportDate => 'Ngày ghi nhận';
+
+  @override
+  String get reportNo => 'STT';
+
+  @override
+  String get reportTotal => 'Tổng cộng';
+
+  @override
+  String get reportBags => 'Số bao nhận';
 }

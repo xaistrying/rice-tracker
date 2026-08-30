@@ -95,5 +95,17 @@
   "@storePartialDescription": {},
   "storePartialDescription": "Những mục còn lại vẫn hiển thị bên dưới, nên tổng khối lượng đang thấp hơn thực tế. Một bản sao của dữ liệu gốc đã được giữ lại.",
   "@dismiss": {},
-  "dismiss": "Đóng"
+  "dismiss": "Đóng",
+  "@reportTitle": {},
+  "reportTitle": "Báo cáo giao lúa",
+  "@reportPurchaser": {},
+  "reportPurchaser": "Người giao dịch",
+  "@reportDate": {},
+  "reportDate": "Ngày ghi nhận",
+  "@reportNo": {},
+  "reportNo": "STT",
+  "@reportTotal": {},
+  "reportTotal": "Tổng cộng",
+  "@reportBags": {},
+  "reportBags": "Số bao nhận"
 }

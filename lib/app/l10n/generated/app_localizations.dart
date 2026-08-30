@@ -372,6 +372,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dismiss'**
   String get dismiss;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rice Delivery Report'**
+  String get reportTitle;
+
+  /// No description provided for @reportPurchaser.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchaser'**
+  String get reportPurchaser;
+
+  /// No description provided for @reportDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date recorded'**
+  String get reportDate;
+
+  /// No description provided for @reportNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No.'**
+  String get reportNo;
+
+  /// No description provided for @reportTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get reportTotal;
+
+  /// No description provided for @reportBags.
+  ///
+  /// In en, this message translates to:
+  /// **'Bags received'**
+  String get reportBags;
 }
 
 class _AppLocalizationsDelegate

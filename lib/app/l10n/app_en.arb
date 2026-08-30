@@ -95,5 +95,17 @@
   "@storePartialDescription": {},
   "storePartialDescription": "Everything else is shown below, so totals here are lower than they should be. A copy of the original has been kept.",
   "@dismiss": {},
-  "dismiss": "Dismiss"
+  "dismiss": "Dismiss",
+  "@reportTitle": {},
+  "reportTitle": "Rice Delivery Report",
+  "@reportPurchaser": {},
+  "reportPurchaser": "Purchaser",
+  "@reportDate": {},
+  "reportDate": "Date recorded",
+  "@reportNo": {},
+  "reportNo": "No.",
+  "@reportTotal": {},
+  "reportTotal": "Total",
+  "@reportBags": {},
+  "reportBags": "Bags received"
 }

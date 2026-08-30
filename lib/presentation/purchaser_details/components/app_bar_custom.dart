@@ -11,6 +11,8 @@ import 'package:go_router/go_router.dart';
 import 'package:rice_tracker/app/extension/context_extension.dart';
 import '../../../app/bloc/app_data/app_data_cubit.dart';
 import '../../../app/constants/image_constant.dart';
+import '../../../app/error/failure.dart';
+import '../../../app/service/report_share_service.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
 import '../../../app/widgets/dialog_widget.dart';
@@ -32,10 +34,29 @@ class AppBarCustom extends StatefulWidget implements PreferredSizeWidget {
 class _AppBarCustomState extends State<AppBarCustom> {
   final newNameController = TextEditingController();
 
+  bool _sharing = false;
+
   @override
   void dispose() {
     newNameController.dispose();
     super.dispose();
+  }
+
+  /// Renders the report and hands it to the system share sheet.
+  ///
+  /// Awaited rather than left to run on its own so a failure surfaces as a
+  /// logged error instead of an unhandled one, and so the button can be put
+  /// back afterwards.
+  Future<void> _share(BuildContext context) async {
+    setState(() => _sharing = true);
+
+    try {
+      await ReportShareService.sharePurchaserReport(context, widget.purchaser);
+    } catch (e, s) {
+      reportFailure('sharePurchaserReport', e, s);
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
   }
 
   @override
@@ -137,6 +158,21 @@ class _AppBarCustomState extends State<AppBarCustom> {
       ),
 
       actions: [
+        IconButton(
+          // Null while a share is in flight, which disables the button. Two
+          // taps in one frame both run before anything rebuilds, so without
+          // this a fast double tap renders and shares the report twice.
+          onPressed: _sharing ? null : () => _share(context),
+          highlightColor: AppColor.primary,
+          hoverColor: AppColor.selectionColor,
+          icon: SvgPicture.asset(
+            ImageConstant.share,
+            colorFilter: ColorFilter.mode(
+              _sharing ? AppColor.grey : AppColor.black,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
         IconButton(
           onPressed: () {
             showDialog(

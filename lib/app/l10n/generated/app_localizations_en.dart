@@ -163,4 +163,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dismiss => 'Dismiss';
+
+  @override
+  String get reportTitle => 'Rice Delivery Report';
+
+  @override
+  String get reportPurchaser => 'Purchaser';
+
+  @override
+  String get reportDate => 'Date recorded';
+
+  @override
+  String get reportNo => 'No.';
+
+  @override
+  String get reportTotal => 'Total';
+
+  @override
+  String get reportBags => 'Bags received';
 }
