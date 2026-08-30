@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Project imports:
 import 'package:rice_tracker/presentation/home/components/floating_action_button_custom.dart';
 import 'package:rice_tracker/presentation/home/components/search_with_stats.dart';
+import 'package:rice_tracker/presentation/home/components/store_read_issue_banner.dart';
 import '../../app/bloc/app_data/app_data_cubit.dart';
 import '../../domain/models/purchaser_filter.dart';
 import 'components/app_bar_custom.dart';
@@ -77,12 +78,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           SearchWithStats(searchController: searchController, filter: filter),
-          Expanded(
-            child: PurchaserList(
-              searchController: searchController,
-              filter: filter,
-            ),
-          ),
+          // Above the list rather than inside it: it has to show even when the
+          // list is empty, which is the case where nothing else hints that
+          // anything went wrong.
+          const StoreReadIssueBanner(),
+          Expanded(child: PurchaserList(filter: filter)),
         ],
       ),
     );

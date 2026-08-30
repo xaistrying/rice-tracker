@@ -5,35 +5,50 @@ import 'dart:convert';
 import 'package:rice_tracker/domain/models/bag_model.dart';
 
 class PurchaserModel {
-  String? id;
-  String? name;
-  List<BagModel>? listOfRiceBagWeights;
-  int? quantity;
-  double? totalWeight;
-  String? dateAdded;
-
   PurchaserModel({
     this.id,
     this.name,
     this.listOfRiceBagWeights,
-    this.quantity,
-    this.totalWeight,
     this.dateAdded,
   });
+
+  /// Final, so that an edit has to go through [copyWith].
+  ///
+  /// The state compares its purchaser list with a [DeepCollectionEquality],
+  /// which falls back to identity for this class, so mutating an instance in
+  /// place also changes the previous state's copy of it. The two then compare
+  /// equal and the emit is dropped, leaving the screen showing stale data.
+  /// That has happened once already; it is a compile error now.
+  final String? id;
+  final String? name;
+  final List<BagModel>? listOfRiceBagWeights;
+  final String? dateAdded;
+
+  /// How many bags this purchaser has.
+  ///
+  /// Derived rather than stored. A persisted copy of a fact that already lives
+  /// in [listOfRiceBagWeights] can drift from it, and nothing reconciled the
+  /// two on load: the home list and the details header both read the stored
+  /// field, so they agreed with each other while both were wrong.
+  int get quantity => listOfRiceBagWeights?.length ?? 0;
+
+  /// The combined weight of every bag, in kg.
+  double get totalWeight =>
+      listOfRiceBagWeights?.fold<double>(
+        0.0,
+        (sum, bag) => sum + (bag.weight ?? 0),
+      ) ??
+      0.0;
 
   PurchaserModel copyWith({
     String? id,
     String? name,
     List<BagModel>? listOfRiceBagWeights,
-    int? quantity,
-    double? totalWeight,
     String? dateAdded,
   }) => PurchaserModel(
     id: id ?? this.id,
     name: name ?? this.name,
     listOfRiceBagWeights: listOfRiceBagWeights ?? this.listOfRiceBagWeights,
-    quantity: quantity ?? this.quantity,
-    totalWeight: totalWeight ?? this.totalWeight,
     dateAdded: dateAdded ?? this.dateAdded,
   );
 
@@ -42,6 +57,11 @@ class PurchaserModel {
 
   String toRawJson() => json.encode(toJson());
 
+  /// Stored "quantity" and "totalWeight" are deliberately not read back.
+  ///
+  /// They are recomputed from the bags instead, so a stored value written by
+  /// an older build that disagrees with them is corrected on the next write
+  /// rather than trusted forever.
   factory PurchaserModel.fromJson(Map<String, dynamic> json) => PurchaserModel(
     id: json["id"],
     name: json["name"],
@@ -52,11 +72,10 @@ class PurchaserModel {
               (x) => BagModel.fromJson(x as Map<String, dynamic>),
             ),
           ),
-    quantity: json["quantity"],
-    totalWeight: json["totalWeight"]?.toDouble(),
     dateAdded: json["dateAdded"],
   );
 
+  /// Both derived values are still written, so the stored shape is unchanged.
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,

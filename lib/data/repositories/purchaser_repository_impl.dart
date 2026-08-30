@@ -4,12 +4,14 @@ import 'package:fpdart/fpdart.dart';
 // Project imports:
 import 'package:rice_tracker/app/error/failure.dart';
 import 'package:rice_tracker/domain/models/purchaser_model.dart';
+import 'package:rice_tracker/domain/models/stored_purchaser_list.dart';
 import 'package:rice_tracker/domain/repositories/purchaser_repository.dart';
-import '../../app/di/injector.dart';
 import '../datasources/purchaser_data_source.dart';
 
 class PurchaserRepositoryImpl implements PurchaserRepository {
-  final _dataSource = getIt<PurchaserDataSource>();
+  PurchaserRepositoryImpl(this._dataSource);
+
+  final PurchaserDataSource _dataSource;
 
   @override
   Future<Either<Failure, void>> cachePurchaserList({
@@ -18,38 +20,28 @@ class PurchaserRepositoryImpl implements PurchaserRepository {
     try {
       await _dataSource.cachePurchaserList(purchaserList: purchaserList);
       return const Right(null);
-    } catch (e) {
-      return Left(Failure(message: e.toString()));
+    } catch (e, s) {
+      return Left(reportFailure('cachePurchaserList', e, s));
     }
   }
 
   @override
-  Either<Failure, List<PurchaserModel>> getPurchaserList() {
+  Either<Failure, StoredPurchaserList> getPurchaserList() {
     try {
       final res = _dataSource.getPurchaserList();
       return Right(res);
-    } catch (e) {
-      return Left(Failure(message: e.toString()));
+    } catch (e, s) {
+      return Left(reportFailure('getPurchaserList', e, s));
     }
   }
 
   @override
-  Future<Either<Failure, void>> cacheDate({required String date}) async {
+  Future<Either<Failure, bool>> backupPurchaserList() async {
     try {
-      await _dataSource.cacheDate(date: date);
-      return const Right(null);
-    } catch (e) {
-      return Left(Failure(message: e.toString()));
-    }
-  }
-
-  @override
-  Either<Failure, String> getDate() {
-    try {
-      final res = _dataSource.getDate();
+      final res = await _dataSource.backupPurchaserList();
       return Right(res);
-    } catch (e) {
-      return Left(Failure(message: e.toString()));
+    } catch (e, s) {
+      return Left(reportFailure('backupPurchaserList', e, s));
     }
   }
 }

@@ -307,4 +307,114 @@ void main() {
       );
     });
   });
+
+  group('searching Vietnamese names', () {
+    final people = [
+      person('Trần Văn A', '26/08/2026 09:00'),
+      person('Nguyễn Thị B', '26/08/2026 09:00'),
+      person('Lê Đức C', '26/08/2026 09:00'),
+      person('Phạm Ngọc Trai', '26/08/2026 09:00'),
+    ];
+
+    List<String> namesFor(String query) => PurchaserFilter(
+      query: query,
+    ).apply(people, now: now).map((e) => e.name!).toList();
+
+    test('an unaccented query matches an accented name', () {
+      // The case a phone keyboard makes expensive: the marks cost several
+      // extra keystrokes per letter, so most queries arrive bare.
+      expect(namesFor('tran'), ['Trần Văn A']);
+      expect(namesFor('nguyen'), ['Nguyễn Thị B']);
+      expect(namesFor('ngoc'), ['Phạm Ngọc Trai']);
+    });
+
+    test('a bare vowel matches its circumflex and horn forms', () {
+      // Not only tone marks: toLowerCase leaves 'ê' distinct from 'e'.
+      expect(namesFor('le'), ['Lê Đức C']);
+    });
+
+    test('d matches the crossed d', () {
+      // The capital lowercases to the crossed lowercase, not to 'd', so case
+      // folding on its own never gets there.
+      expect(namesFor('duc'), ['Lê Đức C']);
+      expect(namesFor('d'), ['Lê Đức C']);
+    });
+
+    test('a fully accented query still matches', () {
+      expect(namesFor('Trần'), ['Trần Văn A']);
+      expect(namesFor('Đức'), ['Lê Đức C']);
+    });
+
+    test('a partly accented query matches', () {
+      expect(namesFor('Trân'), ['Trần Văn A']);
+      expect(namesFor('nguyễn'), ['Nguyễn Thị B']);
+    });
+
+    test('folding does not make unrelated names match', () {
+      expect(namesFor('xyz'), isEmpty);
+      expect(namesFor('nguyet'), isEmpty);
+    });
+
+    test('a decomposed query matches a precomposed name', () {
+      // 'a' followed by the combining grave U+0300, rather than the single
+      // rune a keyboard produces. Both have to fold down to a bare 'a'.
+      expect(namesFor('Tràn'), ['Trần Văn A']);
+    });
+
+    test('matching is still case-insensitive', () {
+      expect(namesFor('TRAN'), ['Trần Văn A']);
+    });
+  });
+
+  group('emptyCause', () {
+    final people = [
+      person('Trần Văn A', '26/08/2026 09:00'),
+      person('Lê Đức C', '15/07/2026 09:00'),
+    ];
+
+    test('is null while something still shows', () {
+      expect(const PurchaserFilter().emptyCause(people, now: now), isNull);
+      expect(
+        const PurchaserFilter(query: 'tran').emptyCause(people, now: now),
+        isNull,
+      );
+    });
+
+    test('blames the query when it matches nobody at all', () {
+      expect(
+        const PurchaserFilter(query: 'xyz').emptyCause(people, now: now),
+        FilterEmptyCause.query,
+      );
+    });
+
+    test('blames the query even when a period is also set', () {
+      expect(
+        const PurchaserFilter(
+          query: 'xyz',
+          period: FilterPeriod.today,
+        ).emptyCause(people, now: now),
+        FilterEmptyCause.query,
+      );
+    });
+
+    test('blames the period when the query matches someone outside it', () {
+      // That person exists but was added last month, so widening the period is
+      // what brings them back, not editing the query.
+      expect(
+        const PurchaserFilter(
+          query: 'duc',
+          period: FilterPeriod.today,
+        ).emptyCause(people, now: now),
+        FilterEmptyCause.period,
+      );
+    });
+
+    test('blames the period when there is no query', () {
+      final filter = const PurchaserFilter().withCustomRange(
+        DateTimeRange(start: DateTime(2020), end: DateTime(2020, 1, 2)),
+      );
+
+      expect(filter.emptyCause(people, now: now), FilterEmptyCause.period);
+    });
+  });
 }

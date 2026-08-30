@@ -2,10 +2,12 @@
 import 'dart:convert';
 
 class BagModel {
-  String? id;
-  double? weight;
-
   BagModel({this.id, this.weight});
+
+  /// Final, so that an edit has to go through [copyWith]. See the note on
+  /// PurchaserModel's fields for why mutating one in place breaks the state.
+  final String? id;
+  final double? weight;
 
   BagModel copyWith({String? id, double? weight}) =>
       BagModel(id: id ?? this.id, weight: weight ?? this.weight);

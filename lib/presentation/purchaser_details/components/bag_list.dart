@@ -41,27 +41,36 @@ class BagList extends StatelessWidget {
 
     final int rows = (numberOfBags + 2) ~/ 3;
     return Expanded(
-      child: ListView.separated(
-        itemCount: rows,
-        padding: const EdgeInsets.symmetric(horizontal: AppDimens.padding16),
-        physics: ClampingScrollPhysics(),
-        itemBuilder: (context, rowIndex) {
-          final start = rowIndex * 3;
-          return Row(
-            spacing: AppDimens.padding8,
-            children: List.generate(3, (colIndex) {
-              final idx = start + colIndex;
-              if (idx >= numberOfBags) {
-                return const Expanded(child: SizedBox());
-              }
-              return Expanded(
-                child: _buildBagCell(context, purchaser, bags, idx),
-              );
-            }),
-          );
-        },
-        separatorBuilder: (context, index) =>
-            SizedBox(height: AppDimens.padding8),
+      // The stretch at the ends is the overscroll indicator, not the physics:
+      // Android already scrolls with ClampingScrollPhysics, which reports the
+      // excess as an OverscrollNotification, and that is what the indicator
+      // animates on. It can only be turned off here.
+      //
+      // ListView does not forward scrollBehavior the way CustomScrollView
+      // does, so this wraps rather than passing an argument.
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(overscroll: false),
+        child: ListView.separated(
+          itemCount: rows,
+          padding: const EdgeInsets.symmetric(horizontal: AppDimens.padding16),
+          itemBuilder: (context, rowIndex) {
+            final start = rowIndex * 3;
+            return Row(
+              spacing: AppDimens.padding8,
+              children: List.generate(3, (colIndex) {
+                final idx = start + colIndex;
+                if (idx >= numberOfBags) {
+                  return const Expanded(child: SizedBox());
+                }
+                return Expanded(
+                  child: _buildBagCell(context, purchaser, bags, idx),
+                );
+              }),
+            );
+          },
+          separatorBuilder: (context, index) =>
+              SizedBox(height: AppDimens.padding8),
+        ),
       ),
     );
   }

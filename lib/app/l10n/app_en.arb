@@ -77,5 +77,23 @@
   "@noPurchaserInPeriodTitle": {},
   "noPurchaserInPeriodTitle": "Nothing in this period",
   "@noPurchaserInPeriodDescription": {},
-  "noPurchaserInPeriodDescription": "No one was added in the selected period. Try a different range or clear the filter."
+  "noPurchaserInPeriodDescription": "No one was added in the selected period. Try a different range or clear the filter.",
+  "@noSearchResultTitle": {},
+  "noSearchResultTitle": "No matching name",
+  "@noSearchResultDescription": {},
+  "noSearchResultDescription": "No one matches what you typed. Check the spelling, or clear the search to see everyone.",
+  "@storeUnreadableTitle": {},
+  "storeUnreadableTitle": "Your saved records could not be opened",
+  "@storeUnreadableDescription": {},
+  "storeUnreadableDescription": "They have not been deleted, and a copy has been kept. Please back up this device and get help before adding anything new.",
+  "@storePartialTitle": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "storePartialTitle": "{count, plural, =1{1 record could not be read} other{{count} records could not be read}}",
+  "@storePartialDescription": {},
+  "storePartialDescription": "Everything else is shown below, so totals here are lower than they should be. A copy of the original has been kept.",
+  "@dismiss": {},
+  "dismiss": "Dismiss"
 }

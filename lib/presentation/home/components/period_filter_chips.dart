@@ -122,39 +122,54 @@ class _PeriodFilterChipsState extends State<PeriodFilterChips> {
 
         return SizedBox(
           height: 36,
-          child: ListView.separated(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            physics: const ClampingScrollPhysics(),
-            itemCount: FilterPeriod.values.length,
-            separatorBuilder: (_, _) =>
-                const SizedBox(width: AppDimens.padding8),
-            itemBuilder: (context, index) {
-              final period = FilterPeriod.values[index];
-              final isSelected = period == selected;
+          // The stretch at the ends is the overscroll indicator, not the
+          // physics: Android already scrolls with ClampingScrollPhysics, which
+          // reports the excess as an OverscrollNotification, and that is what
+          // the indicator animates on. It can only be turned off here.
+          //
+          // ListView does not forward scrollBehavior the way CustomScrollView
+          // does, so this wraps rather than passing an argument.
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(
+              context,
+            ).copyWith(overscroll: false),
+            child: ListView.separated(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              itemCount: FilterPeriod.values.length,
+              separatorBuilder: (_, _) =>
+                  const SizedBox(width: AppDimens.padding8),
+              itemBuilder: (context, index) {
+                final period = FilterPeriod.values[index];
+                final isSelected = period == selected;
 
-              return ChoiceChip(
-                label: Text(_labelFor(context, period)),
-                selected: isSelected,
-                onSelected: (_) => _select(context, period),
-                showCheckmark: false,
-                visualDensity: VisualDensity.compact,
-                labelStyle: TextStyle(
-                  fontSize: AppDimens.fontSizeDefault,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: AppColor.foreground,
-                ),
-                backgroundColor: AppColor.card,
-                selectedColor: AppColor.lightPrimary,
-                side: BorderSide(
-                  width: AppDimens.borderWidth1,
-                  color: isSelected ? AppColor.primary : AppColor.border,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
-                ),
-              );
-            },
+                return ChoiceChip(
+                  label: Text(_labelFor(context, period)),
+                  selected: isSelected,
+                  onSelected: (_) => _select(context, period),
+                  showCheckmark: false,
+                  visualDensity: VisualDensity.compact,
+                  labelStyle: TextStyle(
+                    fontSize: AppDimens.fontSizeDefault,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                    color: AppColor.foreground,
+                  ),
+                  backgroundColor: AppColor.card,
+                  selectedColor: AppColor.lightPrimary,
+                  side: BorderSide(
+                    width: AppDimens.borderWidth1,
+                    color: isSelected ? AppColor.primary : AppColor.border,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      AppDimens.borderRadius8,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         );
       },

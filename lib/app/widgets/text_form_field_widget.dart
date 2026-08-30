@@ -15,6 +15,7 @@ class TextFormFieldWidget extends StatelessWidget {
     this.keyboardType,
     this.textInputAction,
     this.hintText,
+    this.autofocus = false,
   });
 
   final TextEditingController controller;
@@ -24,10 +25,17 @@ class TextFormFieldWidget extends StatelessWidget {
   final TextInputAction? textInputAction;
   final String? hintText;
 
+  /// Takes focus, and so opens the keyboard, as soon as this is first built.
+  ///
+  /// Off by default: it is only right where typing is the reason the screen
+  /// was opened.
+  final bool autofocus;
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      autofocus: autofocus,
 
       onTapOutside: onTapOutsideEnabled
           ? (_) => WidgetsBinding.instance.focusManager.primaryFocus?.unfocus()

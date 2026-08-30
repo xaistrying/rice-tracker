@@ -64,40 +64,49 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: AppDimens.padding16),
-        physics: ClampingScrollPhysics(),
-        children: [
-          CardWidget(
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                context.loc.languages,
-                style: TextStyle(
-                  fontSize: AppDimens.fontSizeDefault,
-                  color: AppColor.black,
+      // The stretch at the ends is the overscroll indicator, not the physics:
+      // Android already scrolls with ClampingScrollPhysics, which reports the
+      // excess as an OverscrollNotification, and that is what the indicator
+      // animates on. It can only be turned off here.
+      //
+      // ListView does not forward scrollBehavior the way CustomScrollView
+      // does, so this wraps rather than passing an argument.
+      body: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(overscroll: false),
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: AppDimens.padding16),
+          children: [
+            CardWidget(
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  context.loc.languages,
+                  style: TextStyle(
+                    fontSize: AppDimens.fontSizeDefault,
+                    color: AppColor.black,
+                  ),
+                ),
+                trailing: BlocBuilder<AppConfigCubit, AppConfigState>(
+                  builder: (context, state) {
+                    return SegmentedButtonWidget(
+                      values: AppLocalizations.supportedLocales
+                          .map((e) => e.languageCode)
+                          .toList(),
+                      selected: {state.data.locale.toString()},
+                      onSelectionChanged: (newSelection) => context
+                          .read<AppConfigCubit>()
+                          .updateLocale(Locale(newSelection.first)),
+                    );
+                  },
                 ),
               ),
-              trailing: BlocBuilder<AppConfigCubit, AppConfigState>(
-                builder: (context, state) {
-                  return SegmentedButtonWidget(
-                    values: AppLocalizations.supportedLocales
-                        .map((e) => e.languageCode)
-                        .toList(),
-                    selected: {state.data.locale.toString()},
-                    onSelectionChanged: (newSelection) => context
-                        .read<AppConfigCubit>()
-                        .updateLocale(Locale(newSelection.first)),
-                  );
-                },
-              ),
             ),
-          ),
-          SizedBox(height: AppDimens.padding16),
+            SizedBox(height: AppDimens.padding16),
 
-          DeleteAllPurchaser(),
-          SizedBox(height: AppDimens.padding16),
-        ],
+            DeleteAllPurchaser(),
+            SizedBox(height: AppDimens.padding16),
+          ],
+        ),
       ),
     );
   }

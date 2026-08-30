@@ -131,4 +131,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noPurchaserInPeriodDescription =>
       'No one was added in the selected period. Try a different range or clear the filter.';
+
+  @override
+  String get noSearchResultTitle => 'No matching name';
+
+  @override
+  String get noSearchResultDescription =>
+      'No one matches what you typed. Check the spelling, or clear the search to see everyone.';
+
+  @override
+  String get storeUnreadableTitle => 'Your saved records could not be opened';
+
+  @override
+  String get storeUnreadableDescription =>
+      'They have not been deleted, and a copy has been kept. Please back up this device and get help before adding anything new.';
+
+  @override
+  String storePartialTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count records could not be read',
+      one: '1 record could not be read',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get storePartialDescription =>
+      'Everything else is shown below, so totals here are lower than they should be. A copy of the original has been kept.';
+
+  @override
+  String get dismiss => 'Dismiss';
 }

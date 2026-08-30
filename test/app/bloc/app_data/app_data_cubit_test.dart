@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
 import 'package:rice_tracker/app/di/injector.dart';
 import 'package:rice_tracker/data/datasources/purchaser_data_source.dart';
+import 'package:rice_tracker/domain/models/stored_purchaser_list.dart';
+import 'package:rice_tracker/domain/repositories/config_repository.dart';
 import 'package:rice_tracker/domain/repositories/purchaser_repository.dart';
 
 /// Lets a state emission be observed before asserting on it.
@@ -38,11 +40,11 @@ void main() {
   }
 
   group('purchaser edits produce a distinct state', () {
-    // The models are mutable and have no `==`, and the state compares its
-    // list with DeepCollectionEquality. Mutating a model in place therefore
-    // leaves the new state equal to the old one, and Cubit silently drops an
-    // emit of an equal state. These tests fail if the cubit ever goes back to
-    // mutating instead of replacing via copyWith.
+    // The models have no `==`, and the state compares its list with
+    // DeepCollectionEquality, so an edit that reused an instance would leave
+    // the new state equal to the old one and Cubit would silently drop the
+    // emit. The fields are final now, so that particular mistake no longer
+    // compiles; these cover the behaviour that depends on it.
     test('rename emits, and leaves the previous state untouched', () async {
       await cubit.addNewPurchaser(name: 'Alice');
       final id = cubit.state.data.purchaserList.single.id;
@@ -284,8 +286,8 @@ void main() {
 
       final persisted = getIt<PurchaserRepository>()
           .getPurchaserList()
-          .getOrElse((_) => []);
-      expect(persisted.map((e) => e.id).toSet(), hasLength(2));
+          .getOrElse((_) => const StoredPurchaserList());
+      expect(persisted.purchasers.map((e) => e.id).toSet(), hasLength(2));
     });
 
     test('data without collisions is left exactly as it was', () async {
@@ -298,7 +300,7 @@ void main() {
 
   group('updateIfNewDay', () {
     Future<void> seedDate(DateTime date) =>
-        getIt<PurchaserRepository>().cacheDate(date: date.toIso8601String());
+        getIt<ConfigRepository>().cacheDate(date: date.toIso8601String());
 
     test('emits when the cached date is from an earlier day', () async {
       await seedDate(DateTime.now().subtract(const Duration(days: 2)));
@@ -328,12 +330,12 @@ void main() {
     });
 
     test('a corrupt cached date is re-seeded rather than thrown', () async {
-      await getIt<PurchaserRepository>().cacheDate(date: 'not-a-date');
+      await getIt<ConfigRepository>().cacheDate(date: 'not-a-date');
 
       await expectLater(cubit.updateIfNewDay(), completes);
       expect(
         DateTime.tryParse(
-          getIt<PurchaserRepository>().getDate().getOrElse((_) => ''),
+          getIt<ConfigRepository>().getDate().getOrElse((_) => ''),
         ),
         isNotNull,
       );

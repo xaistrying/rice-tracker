@@ -9,4 +9,9 @@ abstract class ConfigRepository {
   Future<Either<Failure, void>> cacheLanguageCode({
     required String languageCode,
   });
+
+  /// The day the app was last opened, as an ISO 8601 string, or '' if it has
+  /// never been recorded.
+  Either<Failure, String> getDate();
+  Future<Either<Failure, void>> cacheDate({required String date});
 }

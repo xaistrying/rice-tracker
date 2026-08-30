@@ -15,6 +15,11 @@ class AppColor {
   static const destructive = Color.fromARGB(255, 229, 72, 77);
   static const grey = Color.fromARGB(255, 160, 160, 160);
 
+  /// For the store-read warning. Distinct from [destructive], which marks an
+  /// action the user is about to take rather than a condition to read.
+  static const warning = Color.fromARGB(255, 173, 95, 0);
+  static const lightWarning = Color.fromARGB(255, 255, 240, 219);
+
   static const selectionColor = Color.fromARGB(75, 242, 201, 76);
   static const lightPrimary = Color.fromARGB(255, 255, 244, 207);
   static const barrierColor = Color.fromARGB(50, 51, 49, 43);

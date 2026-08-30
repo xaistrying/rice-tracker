@@ -1,3 +1,6 @@
+// Dart imports:
+import 'dart:async';
+
 // Package imports:
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -6,6 +9,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rice_tracker/app/di/injector.dart';
 import 'package:rice_tracker/domain/models/bag_model.dart';
 import 'package:rice_tracker/domain/models/purchaser_model.dart';
+import 'package:rice_tracker/domain/models/stored_purchaser_list.dart';
+import '../../../domain/repositories/config_repository.dart';
 import '../../../domain/repositories/purchaser_repository.dart';
 import '../../extension/date_time_extension.dart';
 
@@ -13,11 +18,22 @@ part 'app_data_state.dart';
 part 'app_data_cubit.freezed.dart';
 
 class AppDataCubit extends Cubit<AppDataState> {
-  AppDataCubit() : super(const _InitialState(AppDataStateData())) {
+  /// Both repositories default to the container so that a BlocProvider does
+  /// not have to resolve them, while a test can still pass a fake.
+  AppDataCubit({
+    PurchaserRepository? purchaserRepo,
+    ConfigRepository? configRepo,
+  }) : _purchaserRepo = purchaserRepo ?? getIt<PurchaserRepository>(),
+       _configRepo = configRepo ?? getIt<ConfigRepository>(),
+       super(const _InitialState(AppDataStateData())) {
     _init();
   }
 
-  final _purchaserRepo = getIt<PurchaserRepository>();
+  final PurchaserRepository _purchaserRepo;
+
+  /// Only for the last-opened date, which is app state rather than purchaser
+  /// data and so does not belong on [PurchaserRepository].
+  final ConfigRepository _configRepo;
 
   Future<void> _init() async {
     updatePurchaserList();
@@ -104,11 +120,37 @@ class AppDataCubit extends Cubit<AppDataState> {
   }
 
   void updatePurchaserList() {
-    final purchaserList = _purchaserRepo.getPurchaserList().getOrElse(
-      (_) => [],
-    );
+    final result = _purchaserRepo.getPurchaserList();
+    final stored = result.getOrElse((_) => const StoredPurchaserList());
+
+    // A store that could not be read in full is the one case where carrying on
+    // normally is destructive: writing replaces the whole list, so the next
+    // ordinary edit would overwrite records the app never managed to load.
+    // Copying the raw value aside first keeps them recoverable.
+    //
+    // Deliberately not awaited. Loading has to stay synchronous so that the
+    // list is in place the moment the cubit is constructed; an edit cannot
+    // arrive before the next frame, and the backup is only best effort.
+    final readIssue = result.isLeft()
+        ? StoreReadIssue.unreadable
+        : (stored.isComplete ? null : StoreReadIssue.partial);
+
+    if (readIssue != null) {
+      unawaited(_purchaserRepo.backupPurchaserList());
+    }
+
+    // Carried in the state so the screen can say so. Keeping the data safe is
+    // not much use on its own: an unreadable store shows the same empty list a
+    // fresh install does, so without this the user's only reasonable reading
+    // is that the app lost everything, and they start typing it back in.
     emit(
-      UpdatePurchaserList(state.data.copyWith(purchaserList: purchaserList)),
+      UpdatePurchaserList(
+        state.data.copyWith(
+          purchaserList: stored.purchasers,
+          readIssue: readIssue,
+          unreadableRecords: stored.skipped,
+        ),
+      ),
     );
   }
 
@@ -195,10 +237,10 @@ class AppDataCubit extends Cubit<AppDataState> {
       BagModel(id: DateTime.now().uniqueId, weight: parsedWeight),
     ];
 
+    // The count and the total follow from the bags, so there is nothing else
+    // to set here.
     purchaserList[index] = purchaserList[index].copyWith(
       listOfRiceBagWeights: bags,
-      totalWeight: _totalWeightOf(bags),
-      quantity: bags.length,
     );
 
     final applied = previous.copyWith(purchaserList: purchaserList);
@@ -225,8 +267,6 @@ class AppDataCubit extends Cubit<AppDataState> {
 
     purchaserList[index] = purchaserList[index].copyWith(
       listOfRiceBagWeights: bags,
-      totalWeight: _totalWeightOf(bags),
-      quantity: bags.length,
     );
 
     final applied = previous.copyWith(purchaserList: purchaserList);
@@ -235,9 +275,6 @@ class AppDataCubit extends Cubit<AppDataState> {
 
     await _persist(applied, previous);
   }
-
-  double _totalWeightOf(List<BagModel> bags) =>
-      bags.fold(0.0, (sum, item) => sum + (item.weight ?? 0));
 
   Future<void> deleteAllPurchaser() async {
     final previous = state.data;
@@ -249,11 +286,11 @@ class AppDataCubit extends Cubit<AppDataState> {
   }
 
   Future<void> updateIfNewDay() async {
-    final date = _purchaserRepo.getDate().getOrElse((_) => '');
+    final date = _configRepo.getDate().getOrElse((_) => '');
     final now = DateTime.now();
 
     if (date == '') {
-      await _purchaserRepo.cacheDate(date: now.toIso8601String());
+      await _configRepo.cacheDate(date: now.toIso8601String());
       return;
     }
 
@@ -262,7 +299,7 @@ class AppDataCubit extends Cubit<AppDataState> {
     final parsedDate = DateTime.tryParse(date);
 
     if (parsedDate == null) {
-      await _purchaserRepo.cacheDate(date: now.toIso8601String());
+      await _configRepo.cacheDate(date: now.toIso8601String());
       return;
     }
 
@@ -275,7 +312,7 @@ class AppDataCubit extends Cubit<AppDataState> {
       // Re-read rather than re-emitting state.data: an identical state is
       // dropped by emit, so the date headers would never refresh.
       updatePurchaserList();
-      await _purchaserRepo.cacheDate(date: now.toIso8601String());
+      await _configRepo.cacheDate(date: now.toIso8601String());
     }
   }
 }

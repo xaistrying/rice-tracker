@@ -85,17 +85,9 @@ class _AppBarCustomState extends State<AppBarCustom> {
               valueListenable: newNameController,
               builder: (context, value, child) => DialogWidget(
                 isConfirmButtonDisable: newNameController.text == '',
-                title: context.loc.enterNameDialogTitle,
+                title: context.loc.editName,
                 body: Column(
                   children: [
-                    Text(
-                      context.loc.editName,
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeDefault,
-                        color: AppColor.foreground,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
                     SizedBox(height: AppDimens.padding12),
                     Align(
                       alignment: AlignmentGeometry.centerLeft,

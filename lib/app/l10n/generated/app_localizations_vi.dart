@@ -132,4 +132,35 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get noPurchaserInPeriodDescription =>
       'Không có ai được thêm trong khoảng thời gian đã chọn. Hãy thử khoảng khác hoặc xóa bộ lọc.';
+
+  @override
+  String get noSearchResultTitle => 'Không tìm thấy tên';
+
+  @override
+  String get noSearchResultDescription =>
+      'Không có ai khớp với từ khóa bạn nhập. Hãy kiểm tra lại chính tả hoặc xóa từ khóa để xem tất cả.';
+
+  @override
+  String get storeUnreadableTitle => 'Không mở được dữ liệu đã lưu';
+
+  @override
+  String get storeUnreadableDescription =>
+      'Dữ liệu chưa bị xóa và đã được giữ lại một bản sao. Hãy sao lưu thiết bị và nhờ hỗ trợ trước khi thêm dữ liệu mới.';
+
+  @override
+  String storePartialTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Không đọc được $count mục',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get storePartialDescription =>
+      'Những mục còn lại vẫn hiển thị bên dưới, nên tổng khối lượng đang thấp hơn thực tế. Một bản sao của dữ liệu gốc đã được giữ lại.';
+
+  @override
+  String get dismiss => 'Đóng';
 }

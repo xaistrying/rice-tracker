@@ -330,6 +330,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No one was added in the selected period. Try a different range or clear the filter.'**
   String get noPurchaserInPeriodDescription;
+
+  /// No description provided for @noSearchResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching name'**
+  String get noSearchResultTitle;
+
+  /// No description provided for @noSearchResultDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'No one matches what you typed. Check the spelling, or clear the search to see everyone.'**
+  String get noSearchResultDescription;
+
+  /// No description provided for @storeUnreadableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved records could not be opened'**
+  String get storeUnreadableTitle;
+
+  /// No description provided for @storeUnreadableDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'They have not been deleted, and a copy has been kept. Please back up this device and get help before adding anything new.'**
+  String get storeUnreadableDescription;
+
+  /// No description provided for @storePartialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 record could not be read} other{{count} records could not be read}}'**
+  String storePartialTitle(int count);
+
+  /// No description provided for @storePartialDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything else is shown below, so totals here are lower than they should be. A copy of the original has been kept.'**
+  String get storePartialDescription;
+
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
 }
 
 class _AppLocalizationsDelegate

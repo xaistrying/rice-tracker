@@ -15,11 +15,15 @@ part 'app_config_state.dart';
 part 'app_config_cubit.freezed.dart';
 
 class AppConfigCubit extends Cubit<AppConfigState> {
-  AppConfigCubit() : super(const _InitialState(AppConfigStateData())) {
+  /// [repo] defaults to the container so that a BlocProvider does not have to
+  /// resolve it, while a test can still pass a fake.
+  AppConfigCubit({ConfigRepository? repo})
+    : _repo = repo ?? getIt<ConfigRepository>(),
+      super(const _InitialState(AppConfigStateData())) {
     _init();
   }
 
-  final _repo = getIt<ConfigRepository>();
+  final ConfigRepository _repo;
 
   Future<void> _init() async {
     final languageCode = _repo.getLanguageCode().getOrElse((_) {
@@ -34,17 +38,27 @@ class AppConfigCubit extends Cubit<AppConfigState> {
 
       return languageCode;
     });
-    updateLocale(
+    await updateLocale(
       AppLocalizations.supportedLocales.firstWhere(
         (locale) => locale.languageCode == languageCode,
+        // The stored code is only as current as the release that wrote it.
+        // Without this, dropping a supported locale would throw from the
+        // constructor for anyone still holding that code — a crash on every
+        // launch, with no way out but clearing app data.
+        orElse: () => Locale(LanguageCode.en.name),
       ),
     );
   }
 
-  void updateLocale(Locale? locale) {
-    _repo.cacheLanguageCode(
+  /// Applies [locale] and records it.
+  ///
+  /// The state is emitted first so the UI switches immediately; awaiting the
+  /// write only decides when a failure is logged, not what the user sees.
+  Future<void> updateLocale(Locale? locale) async {
+    emit(UpdateLocaleState(state.data.copyWith(locale: locale)));
+
+    await _repo.cacheLanguageCode(
       languageCode: locale?.languageCode ?? LanguageCode.en.name,
     );
-    emit(UpdateLocaleState(state.data.copyWith(locale: locale)));
   }
 }

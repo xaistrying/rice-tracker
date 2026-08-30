@@ -78,7 +78,7 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: '${widget.purchaser.quantity ?? 0}',
+                                text: '${widget.purchaser.quantity}',
                                 style: TextStyle(
                                   fontSize: AppDimens.fontSize16,
                                   fontWeight: FontWeight.bold,
@@ -118,8 +118,9 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                         child: RichText(
                           maxLines: 1,
                           text: TextSpan(
-                            text: (widget.purchaser.totalWeight ?? 0.0)
-                                .toStringAsFixed(1),
+                            text: widget.purchaser.totalWeight.toStringAsFixed(
+                              1,
+                            ),
                             style: TextStyle(
                               fontSize: AppDimens.fontSize16,
                               fontWeight: FontWeight.bold,
@@ -153,6 +154,10 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                       child: TextFormFieldWidget(
                         controller: riceAmountController,
                         onTapOutsideEnabled: false,
+
+                        // Weighing bags is the whole reason this screen is
+                        // opened, so the keyboard is up and ready to type.
+                        autofocus: true,
 
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
@@ -188,6 +193,9 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                                             .loc
                                             .warningRiceAmountDescription,
                                       ),
+                                      // Nothing to confirm: this only reports
+                                      // that the amount was out of range.
+                                      showConfirmButton: false,
                                     );
                                   },
                                 );

@@ -1,11 +1,10 @@
 // Package imports:
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Project imports:
-import '../di/injector.dart';
-
 class AppPrefsServiceHelper {
-  final _pref = getIt<SharedPreferences>();
+  AppPrefsServiceHelper(this._pref);
+
+  final SharedPreferences _pref;
 
   /// Set String Value
   Future<bool> _setStringValue(String key, String value) {
@@ -38,7 +37,7 @@ class AppPrefsServiceHelper {
   }
 
   /// Get StringList Value
-  List? _getStringList(String key) {
+  List<String>? _getStringList(String key) {
     return _pref.getStringList(key);
   }
 
@@ -103,7 +102,15 @@ class AppPrefsServiceHelper {
   }
 
   /// Remove Value
+  ///
+  /// Throws if the key could not be removed, for the same reason [setValue]
+  /// does: the platform reports a refused write by returning false, so a
+  /// silent failure here would leave the value in place unnoticed.
   Future<void> removeValue(String key) async {
-    await _pref.remove(key);
+    final removed = await _pref.remove(key);
+
+    if (!removed) {
+      throw Exception('Failed to remove value for "$key"');
+    }
   }
 }

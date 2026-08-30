@@ -96,15 +96,15 @@ class SearchWithStats extends StatelessWidget {
               return ValueListenableBuilder(
                 valueListenable: filter,
                 builder: (context, activeFilter, child) {
-                  final filterdPurchaserList = activeFilter.apply(
+                  final filteredPurchaserList = activeFilter.apply(
                     purchaserList,
                   );
                   // The total tracks what is on screen, so it stays consistent
                   // with the count beside it.
-                  final totalWeights = filterdPurchaserList.fold(
+                  final totalWeights = filteredPurchaserList.fold(
                     0.0,
                     (previousValue, element) =>
-                        previousValue + (element.totalWeight ?? 0.0),
+                        previousValue + element.totalWeight,
                   );
                   return Row(
                     children: [
@@ -113,7 +113,7 @@ class SearchWithStats extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: filterdPurchaserList.length.toString(),
+                              text: filteredPurchaserList.length.toString(),
                               style: TextStyle(
                                 fontSize: AppDimens.fontSizeDefault,
                                 color: AppColor.black,

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 // Project imports:
 import '../../app/enum/filter_period.dart';
+import '../../app/extension/string_extension.dart';
 import 'purchaser_model.dart';
 
 /// [PurchaserModel.dateAdded] is written as 'dd/MM/yyyy HH:mm'.
@@ -30,6 +31,12 @@ String purchaserDayKey(PurchaserModel purchaser) =>
 /// The day a purchaser was added, or null if it is missing or malformed.
 DateTime? purchaserDay(PurchaserModel purchaser) =>
     parseDayKey(purchaserDayKey(purchaser));
+
+/// Which half of a [PurchaserFilter] left nothing to show.
+///
+/// The two call for different advice: a query that matches nobody is fixed by
+/// editing the query, not by widening the period.
+enum FilterEmptyCause { query, period }
 
 /// The name query and time period the home list is narrowed by.
 ///
@@ -109,14 +116,17 @@ class PurchaserFilter {
 
   /// [purchasers] narrowed to those matching both the query and the period.
   List<PurchaserModel> apply(List<PurchaserModel> purchasers, {DateTime? now}) {
-    final trimmedQuery = query.trim().toLowerCase();
+    // Both sides are folded, so 'tran' matches 'Trần'. Names are stored with
+    // their marks but typing them costs the user several extra keystrokes per
+    // letter, and most will type the bare form.
+    final foldedQuery = query.trim().foldedForSearch;
     final range = rangeOn(now ?? DateTime.now());
 
-    if (trimmedQuery.isEmpty && range == null) return purchasers;
+    if (foldedQuery.isEmpty && range == null) return purchasers;
 
     return purchasers.where((purchaser) {
-      if (trimmedQuery.isNotEmpty &&
-          !(purchaser.name ?? '').toLowerCase().contains(trimmedQuery)) {
+      if (foldedQuery.isNotEmpty &&
+          !(purchaser.name ?? '').foldedForSearch.contains(foldedQuery)) {
         return false;
       }
 
@@ -130,6 +140,33 @@ class PurchaserFilter {
 
       return !day.isBefore(range.start) && !day.isAfter(range.end);
     }).toList();
+  }
+
+  /// Why [apply] found nothing in [purchasers], or null when it found someone.
+  ///
+  /// The query is blamed only when it matches nobody at all: if it does match
+  /// someone who simply falls outside the period, widening the period is what
+  /// brings them back, so the period is the cause.
+  ///
+  /// Callers are expected to have already handled an empty [purchasers], which
+  /// is not a filtering problem at all; it is reported as [FilterEmptyCause
+  /// .period] here for want of anything better to say.
+  FilterEmptyCause? emptyCause(
+    List<PurchaserModel> purchasers, {
+    DateTime? now,
+  }) {
+    final resolvedNow = now ?? DateTime.now();
+
+    if (apply(purchasers, now: resolvedNow).isNotEmpty) return null;
+
+    final queryOnly = withPeriod(FilterPeriod.all);
+
+    if (query.trim().foldedForSearch.isNotEmpty &&
+        queryOnly.apply(purchasers, now: resolvedNow).isEmpty) {
+      return FilterEmptyCause.query;
+    }
+
+    return FilterEmptyCause.period;
   }
 
   @override

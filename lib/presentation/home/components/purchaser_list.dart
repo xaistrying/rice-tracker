@@ -22,19 +22,16 @@ import '../../../app/router/app_router.dart';
 import '../../../app/theme/app_color.dart';
 
 class PurchaserList extends StatelessWidget {
-  const PurchaserList({
-    super.key,
-    required this.searchController,
-    required this.filter,
-  });
+  const PurchaserList({super.key, required this.filter});
 
-  final TextEditingController searchController;
   final ValueNotifier<PurchaserFilter> filter;
 
   @override
   Widget build(BuildContext context) {
+    // No buildWhen: the stats above this list are built from the same state
+    // without one, and narrowing only this side is how the two come to
+    // disagree about what is on screen.
     return BlocBuilder<AppDataCubit, AppDataState>(
-      buildWhen: (previous, current) => current is UpdatePurchaserList,
       builder: (context, state) {
         if (state.data.purchaserList.isEmpty) {
           return NoSomethingYetTile(
@@ -48,9 +45,18 @@ class PurchaserList extends StatelessWidget {
             final purchaserList = activeFilter.apply(state.data.purchaserList);
 
             if (purchaserList.isEmpty) {
+              // Telling someone to widen a date range they never touched is
+              // no help when it is the typed name that matched nobody.
+              final cause = activeFilter.emptyCause(state.data.purchaserList);
+              final blamesQuery = cause == FilterEmptyCause.query;
+
               return NoSomethingYetTile(
-                title: context.loc.noPurchaserInPeriodTitle,
-                description: context.loc.noPurchaserInPeriodDescription,
+                title: blamesQuery
+                    ? context.loc.noSearchResultTitle
+                    : context.loc.noPurchaserInPeriodTitle,
+                description: blamesQuery
+                    ? context.loc.noSearchResultDescription
+                    : context.loc.noPurchaserInPeriodDescription,
               );
             }
 
@@ -178,7 +184,7 @@ class PurchaserList extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${(purchaser.totalWeight ?? 0).toStringAsFixed(1)} kg',
+                                      '${purchaser.totalWeight.toStringAsFixed(1)} kg',
                                       style: TextStyle(
                                         fontSize: AppDimens.fontSize16,
                                         fontWeight: FontWeight.bold,
@@ -194,16 +200,14 @@ class PurchaserList extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                onTap: () {
-                                  context
-                                      .push(
-                                        AppRouter.purchaserDetails,
-                                        extra: purchaser,
-                                      )
-                                      .then(
-                                        (value) => searchController.clear(),
-                                      );
-                                },
+                                // The filter is deliberately left alone on the
+                                // way back: clearing only the query while the
+                                // period chip stayed put reset half the filter
+                                // with no sign of it having happened.
+                                onTap: () => context.push(
+                                  AppRouter.purchaserDetails,
+                                  extra: purchaser,
+                                ),
                               ),
                             ),
                             SizedBox(height: AppDimens.padding16),

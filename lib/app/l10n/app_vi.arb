@@ -77,5 +77,23 @@
   "@noPurchaserInPeriodTitle": {},
   "noPurchaserInPeriodTitle": "Không có dữ liệu",
   "@noPurchaserInPeriodDescription": {},
-  "noPurchaserInPeriodDescription": "Không có ai được thêm trong khoảng thời gian đã chọn. Hãy thử khoảng khác hoặc xóa bộ lọc."
+  "noPurchaserInPeriodDescription": "Không có ai được thêm trong khoảng thời gian đã chọn. Hãy thử khoảng khác hoặc xóa bộ lọc.",
+  "@noSearchResultTitle": {},
+  "noSearchResultTitle": "Không tìm thấy tên",
+  "@noSearchResultDescription": {},
+  "noSearchResultDescription": "Không có ai khớp với từ khóa bạn nhập. Hãy kiểm tra lại chính tả hoặc xóa từ khóa để xem tất cả.",
+  "@storeUnreadableTitle": {},
+  "storeUnreadableTitle": "Không mở được dữ liệu đã lưu",
+  "@storeUnreadableDescription": {},
+  "storeUnreadableDescription": "Dữ liệu chưa bị xóa và đã được giữ lại một bản sao. Hãy sao lưu thiết bị và nhờ hỗ trợ trước khi thêm dữ liệu mới.",
+  "@storePartialTitle": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "storePartialTitle": "{count, plural, other{Không đọc được {count} mục}}",
+  "@storePartialDescription": {},
+  "storePartialDescription": "Những mục còn lại vẫn hiển thị bên dưới, nên tổng khối lượng đang thấp hơn thực tế. Một bản sao của dữ liệu gốc đã được giữ lại.",
+  "@dismiss": {},
+  "dismiss": "Đóng"
 }

@@ -160,4 +160,37 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Erin'), findsOneWidget);
   });
+
+  testWidgets('the weight field has focus as soon as the screen opens', (
+    tester,
+  ) async {
+    await pumpDetailsFor(tester, name: 'Frank');
+
+    final field = tester.widget<EditableText>(find.byType(EditableText));
+
+    expect(
+      field.focusNode.hasFocus,
+      isTrue,
+      reason: 'weighing bags is why the screen was opened, so no extra tap',
+    );
+    // Focus alone is not enough; this is what actually raises the keyboard.
+    expect(tester.testTextInput.isVisible, isTrue);
+  });
+
+  testWidgets('typing goes straight into the field, with no tap first', (
+    tester,
+  ) async {
+    final pushed = await pumpDetailsFor(tester, name: 'Grace');
+
+    await tester.enterText(find.byType(EditableText), '12.5');
+    await tester.pump();
+
+    expect(find.text('12.5'), findsOneWidget);
+    expect(
+      cubit.state.data.purchaserList.single.id,
+      pushed.id,
+      reason: 'typing must not have committed anything on its own',
+    );
+    expect(cubit.state.data.purchaserList.single.quantity, 0);
+  });
 }

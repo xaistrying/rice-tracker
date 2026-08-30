@@ -17,6 +17,7 @@ class DialogWidget extends StatelessWidget {
     this.confirmButtonFunc,
     this.confirmButtonName,
     this.isConfirmButtonDisable = false,
+    this.showConfirmButton = true,
   });
 
   final String title;
@@ -24,6 +25,15 @@ class DialogWidget extends StatelessWidget {
   final Function()? confirmButtonFunc;
   final String? confirmButtonName;
   final bool isConfirmButtonDisable;
+
+  /// Whether there is anything to confirm.
+  ///
+  /// A dialog that only reports something has no action behind it, so offering
+  /// Confirm asks the user to agree to a warning. Deliberately separate from
+  /// [isConfirmButtonDisable], which keeps the button in place but inert —
+  /// that is for a choice the user cannot make *yet*, where the button
+  /// disappearing as they type would be worse.
+  final bool showConfirmButton;
 
   @override
   Widget build(BuildContext context) {
@@ -88,43 +98,46 @@ class DialogWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: TextButton(
-                    onPressed: isConfirmButtonDisable
-                        ? null
-                        : () {
-                            if (confirmButtonFunc != null) {
-                              confirmButtonFunc?.call();
-                            }
-                          },
-                    style: TextButton.styleFrom(
-                      backgroundColor: isConfirmButtonDisable
-                          ? AppColor.lightPrimary
-                          : AppColor.primary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppDimens.padding16,
-                        vertical: AppDimens.padding16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius4,
+                // Close is left as the only button, and the Row stretches it
+                // to the full width.
+                if (showConfirmButton)
+                  Expanded(
+                    child: TextButton(
+                      onPressed: isConfirmButtonDisable
+                          ? null
+                          : () {
+                              if (confirmButtonFunc != null) {
+                                confirmButtonFunc?.call();
+                              }
+                            },
+                      style: TextButton.styleFrom(
+                        backgroundColor: isConfirmButtonDisable
+                            ? AppColor.lightPrimary
+                            : AppColor.primary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppDimens.padding16,
+                          vertical: AppDimens.padding16,
                         ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppDimens.borderRadius4,
+                          ),
+                        ),
+                        splashFactory: NoSplash.splashFactory,
+                        overlayColor: Colors.transparent,
                       ),
-                      splashFactory: NoSplash.splashFactory,
-                      overlayColor: Colors.transparent,
-                    ),
-                    child: Text(
-                      confirmButtonName ?? context.loc.confirm,
-                      style: TextStyle(
-                        fontSize: AppDimens.fontSizeDefault,
-                        fontWeight: FontWeight.bold,
-                        color: isConfirmButtonDisable
-                            ? AppColor.grey
-                            : AppColor.white,
+                      child: Text(
+                        confirmButtonName ?? context.loc.confirm,
+                        style: TextStyle(
+                          fontSize: AppDimens.fontSizeDefault,
+                          fontWeight: FontWeight.bold,
+                          color: isConfirmButtonDisable
+                              ? AppColor.grey
+                              : AppColor.white,
+                        ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           ],
