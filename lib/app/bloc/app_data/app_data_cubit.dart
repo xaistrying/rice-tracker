@@ -19,8 +19,88 @@ class AppDataCubit extends Cubit<AppDataState> {
 
   final _purchaserRepo = getIt<PurchaserRepository>();
 
-  void _init() {
+  Future<void> _init() async {
     updatePurchaserList();
+    await _repairDuplicateIds();
+  }
+
+  /// Gives a fresh id to any record that shares one with an earlier record,
+  /// or has none at all.
+  ///
+  /// Ids were once a bare timestamp, which repeats for records created within
+  /// the same clock tick. Records are looked up by id, so a duplicate makes a
+  /// single delete remove every record that shares it. Data written before
+  /// that was fixed can still hold collisions, so the invariant is re-checked
+  /// on load; it only writes when it actually finds one.
+  Future<void> _repairDuplicateIds() async {
+    final purchaserList = [...state.data.purchaserList];
+    final seenPurchaserIds = <String>{};
+    var changed = false;
+
+    for (var i = 0; i < purchaserList.length; i++) {
+      var purchaser = purchaserList[i];
+
+      final id = purchaser.id;
+      if (id == null || !seenPurchaserIds.add(id)) {
+        purchaser = purchaser.copyWith(id: DateTime.now().uniqueId);
+        seenPurchaserIds.add(purchaser.id!);
+        changed = true;
+      }
+
+      final bags = purchaser.listOfRiceBagWeights;
+      if (bags != null) {
+        final seenBagIds = <String>{};
+        final repairedBags = <BagModel>[];
+        var bagsChanged = false;
+
+        for (final bag in bags) {
+          final bagId = bag.id;
+          if (bagId == null || !seenBagIds.add(bagId)) {
+            final repaired = bag.copyWith(id: DateTime.now().uniqueId);
+            seenBagIds.add(repaired.id!);
+            repairedBags.add(repaired);
+            bagsChanged = true;
+          } else {
+            repairedBags.add(bag);
+          }
+        }
+
+        if (bagsChanged) {
+          purchaser = purchaser.copyWith(listOfRiceBagWeights: repairedBags);
+          changed = true;
+        }
+      }
+
+      purchaserList[i] = purchaser;
+    }
+
+    if (!changed) return;
+
+    final previous = state.data;
+    final applied = previous.copyWith(purchaserList: purchaserList);
+
+    emit(UpdatePurchaserList(applied));
+
+    await _persist(applied, previous);
+  }
+
+  /// Writes [applied] to storage, rolling back to [previous] if it fails.
+  ///
+  /// Callers emit [applied] before awaiting this, so that edits made in quick
+  /// succession each build on the latest list instead of on a stale one. The
+  /// rollback is therefore skipped when something else has already moved the
+  /// state on, so a failed write cannot discard a later change.
+  Future<void> _persist(
+    AppDataStateData applied,
+    AppDataStateData previous,
+  ) async {
+    final result = await _purchaserRepo.cachePurchaserList(
+      purchaserList: applied.purchaserList,
+    );
+
+    if (result.isLeft() && !isClosed && state.data == applied) {
+      emit(UpdatePurchaserList(previous));
+    }
   }
 
   void updatePurchaserList() {
@@ -32,149 +112,170 @@ class AppDataCubit extends Cubit<AppDataState> {
     );
   }
 
-  void addNewPurchaser({required String name}) {
-    final purchaserList = [...state.data.purchaserList];
+  Future<void> addNewPurchaser({required String name}) async {
+    final now = DateTime.now();
+    final previous = state.data;
 
-    purchaserList.add(
-      PurchaserModel(
-        id: DateTime.now().uniqueId,
-        name: name,
-        dateAdded: DateTime.now().toTimeString(),
-      ),
+    final applied = previous.copyWith(
+      purchaserList: [
+        ...previous.purchaserList,
+        PurchaserModel(
+          id: now.uniqueId,
+          name: name,
+          dateAdded: now.toTimeString(),
+        ),
+      ],
     );
-    _purchaserRepo.cachePurchaserList(purchaserList: purchaserList);
 
-    emit(
-      UpdatePurchaserList(state.data.copyWith(purchaserList: purchaserList)),
-    );
+    emit(UpdatePurchaserList(applied));
+
+    await _persist(applied, previous);
   }
 
-  void removePurchaser({required String? id}) {
+  Future<void> removePurchaser({required String? id}) async {
     if (id == null) return;
 
-    final purchaserList = [...state.data.purchaserList];
-
+    final previous = state.data;
+    final purchaserList = [...previous.purchaserList];
     final index = purchaserList.indexWhere((e) => e.id == id);
 
-    if (index != -1) {
-      purchaserList.removeAt(index);
-      _purchaserRepo.cachePurchaserList(purchaserList: purchaserList);
-    }
+    if (index == -1) return;
 
-    emit(
-      UpdatePurchaserList(state.data.copyWith(purchaserList: purchaserList)),
-    );
+    purchaserList.removeAt(index);
+
+    final applied = previous.copyWith(purchaserList: purchaserList);
+
+    emit(UpdatePurchaserList(applied));
+
+    await _persist(applied, previous);
   }
 
-  void updatePurchaserName({required String? id, required String? newName}) {
-    emit(UpdateInProgress(state.data));
-
+  Future<void> updatePurchaserName({
+    required String? id,
+    required String? newName,
+  }) async {
     if (id == null || newName == null) return;
 
-    final purchaserList = [...state.data.purchaserList];
+    final previous = state.data;
+    final purchaserList = [...previous.purchaserList];
     final index = purchaserList.indexWhere((e) => e.id == id);
 
-    if (index != -1) {
-      purchaserList[index].name = newName;
-      _purchaserRepo.cachePurchaserList(purchaserList: purchaserList);
-    }
+    if (index == -1) return;
 
-    emit(
-      UpdatePurchaserList(state.data.copyWith(purchaserList: purchaserList)),
-    );
+    // Replace the element rather than mutating it: the list is a shallow copy,
+    // so mutating in place would also change the previous state's model and
+    // make the new state compare equal to the old one, dropping the emit.
+    purchaserList[index] = purchaserList[index].copyWith(name: newName);
+
+    final applied = previous.copyWith(purchaserList: purchaserList);
+
+    emit(UpdatePurchaserList(applied));
+
+    await _persist(applied, previous);
   }
 
-  void addBagToPurchaser({required String? id, required String? weight}) {
-    emit(UpdateInProgress(state.data));
-
+  Future<void> addBagToPurchaser({
+    required String? id,
+    required String? weight,
+  }) async {
     if (id == null) return;
 
-    if (double.tryParse(weight ?? '') == null) return;
+    final parsedWeight = double.tryParse(weight ?? '');
 
-    final purchaserList = [...state.data.purchaserList];
+    if (parsedWeight == null) return;
 
+    final previous = state.data;
+    final purchaserList = [...previous.purchaserList];
     final index = purchaserList.indexWhere((e) => e.id == id);
 
-    if (purchaserList[index].listOfRiceBagWeights == null) {
-      purchaserList[index].listOfRiceBagWeights = [];
-    }
+    if (index == -1) return;
 
-    purchaserList[index]
-      ..listOfRiceBagWeights!.add(
-        BagModel(
-          id: DateTime.now().uniqueId,
-          weight: double.parse(weight ?? ''),
-        ),
-      )
-      ..totalWeight = purchaserList[index].listOfRiceBagWeights?.fold(
-        0.0,
-        (sum, item) => (sum ?? 0) + (item.weight ?? 0),
-      )
-      ..quantity = purchaserList[index].listOfRiceBagWeights?.length ?? 0;
+    final bags = [
+      ...?purchaserList[index].listOfRiceBagWeights,
+      BagModel(id: DateTime.now().uniqueId, weight: parsedWeight),
+    ];
 
-    _purchaserRepo.cachePurchaserList(purchaserList: purchaserList);
-
-    emit(
-      UpdatePurchaserList(state.data.copyWith(purchaserList: purchaserList)),
+    purchaserList[index] = purchaserList[index].copyWith(
+      listOfRiceBagWeights: bags,
+      totalWeight: _totalWeightOf(bags),
+      quantity: bags.length,
     );
+
+    final applied = previous.copyWith(purchaserList: purchaserList);
+
+    emit(UpdatePurchaserList(applied));
+
+    await _persist(applied, previous);
   }
 
-  void removeBagFromPurchaser({
+  Future<void> removeBagFromPurchaser({
     required String? purchaserId,
     required String? bagId,
-  }) {
-    emit(UpdateInProgress(state.data));
-
+  }) async {
     if (purchaserId == null || bagId == null) return;
 
-    final purchaserList = [...state.data.purchaserList];
-
+    final previous = state.data;
+    final purchaserList = [...previous.purchaserList];
     final index = purchaserList.indexWhere((e) => e.id == purchaserId);
 
-    if (purchaserList[index].listOfRiceBagWeights == null) {
-      purchaserList[index].listOfRiceBagWeights = [];
-    }
+    if (index == -1) return;
 
-    purchaserList[index]
-      ..listOfRiceBagWeights!.removeWhere((item) => item.id == bagId)
-      ..totalWeight = purchaserList[index].listOfRiceBagWeights?.fold(
-        0.0,
-        (sum, item) => (sum ?? 0) + (item.weight ?? 0),
-      )
-      ..quantity = purchaserList[index].listOfRiceBagWeights?.length ?? 0;
+    final bags = [...?purchaserList[index].listOfRiceBagWeights]
+      ..removeWhere((item) => item.id == bagId);
 
-    _purchaserRepo.cachePurchaserList(purchaserList: purchaserList);
-
-    emit(
-      UpdatePurchaserList(state.data.copyWith(purchaserList: purchaserList)),
+    purchaserList[index] = purchaserList[index].copyWith(
+      listOfRiceBagWeights: bags,
+      totalWeight: _totalWeightOf(bags),
+      quantity: bags.length,
     );
+
+    final applied = previous.copyWith(purchaserList: purchaserList);
+
+    emit(UpdatePurchaserList(applied));
+
+    await _persist(applied, previous);
   }
 
-  void deleteAllPurchaser() {
-    _purchaserRepo.cachePurchaserList(purchaserList: []);
-    emit(UpdatePurchaserList(state.data.copyWith(purchaserList: [])));
+  double _totalWeightOf(List<BagModel> bags) =>
+      bags.fold(0.0, (sum, item) => sum + (item.weight ?? 0));
+
+  Future<void> deleteAllPurchaser() async {
+    final previous = state.data;
+    final applied = previous.copyWith(purchaserList: []);
+
+    emit(UpdatePurchaserList(applied));
+
+    await _persist(applied, previous);
   }
 
-  void updateIfNewDay() {
-    emit(UpdateInProgress(state.data));
-
+  Future<void> updateIfNewDay() async {
     final date = _purchaserRepo.getDate().getOrElse((_) => '');
+    final now = DateTime.now();
 
     if (date == '') {
-      _purchaserRepo.cacheDate(date: DateTime.now().toIso8601String());
+      await _purchaserRepo.cacheDate(date: now.toIso8601String());
       return;
     }
 
-    DateTime parsedDate = DateTime.parse(date);
+    // A corrupt cached value would throw from DateTime.parse; re-seed it
+    // instead, the same way an absent value is handled above.
+    final parsedDate = DateTime.tryParse(date);
+
+    if (parsedDate == null) {
+      await _purchaserRepo.cacheDate(date: now.toIso8601String());
+      return;
+    }
 
     final isNewDay =
-        parsedDate.year != DateTime.now().year ||
-        parsedDate.month != DateTime.now().month ||
-        parsedDate.day != DateTime.now().day;
+        parsedDate.year != now.year ||
+        parsedDate.month != now.month ||
+        parsedDate.day != now.day;
 
     if (isNewDay) {
-      emit(UpdatePurchaserList(state.data));
-      _purchaserRepo.cacheDate(date: DateTime.now().toIso8601String());
+      // Re-read rather than re-emitting state.data: an identical state is
+      // dropped by emit, so the date headers would never refresh.
+      updatePurchaserList();
+      await _purchaserRepo.cacheDate(date: now.toIso8601String());
     }
   }
 }

@@ -288,6 +288,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Type DELETE to confirm'**
   String get deleteAllPurchaserConfirmHinText;
+
+  /// No description provided for @allTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allTime;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get thisWeek;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get thisMonth;
+
+  /// No description provided for @customRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get customRange;
+
+  /// No description provided for @selectDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a date range'**
+  String get selectDateRange;
+
+  /// No description provided for @noPurchaserInPeriodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in this period'**
+  String get noPurchaserInPeriodTitle;
+
+  /// No description provided for @noPurchaserInPeriodDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'No one was added in the selected period. Try a different range or clear the filter.'**
+  String get noPurchaserInPeriodDescription;
 }
 
 class _AppLocalizationsDelegate

@@ -1,1 +1,11 @@
+analyzer:
+  exclude:
+    - build/**
+    - android/**
 include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # A dropped Future inside an async body swallows the error and makes the
+    # surrounding try/catch dead code.
+    - unawaited_futures

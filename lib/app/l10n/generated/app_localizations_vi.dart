@@ -110,4 +110,26 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get deleteAllPurchaserConfirmHinText => 'Nhập DELETE để xác nhận';
+
+  @override
+  String get allTime => 'Tất cả';
+
+  @override
+  String get thisWeek => 'Tuần này';
+
+  @override
+  String get thisMonth => 'Tháng này';
+
+  @override
+  String get customRange => 'Tùy chọn';
+
+  @override
+  String get selectDateRange => 'Chọn khoảng thời gian';
+
+  @override
+  String get noPurchaserInPeriodTitle => 'Không có dữ liệu';
+
+  @override
+  String get noPurchaserInPeriodDescription =>
+      'Không có ai được thêm trong khoảng thời gian đã chọn. Hãy thử khoảng khác hoặc xóa bộ lọc.';
 }

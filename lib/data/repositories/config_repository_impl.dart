@@ -28,7 +28,7 @@ class ConfigRepositoryImpl implements ConfigRepository {
     required String languageCode,
   }) async {
     try {
-      _dataSource.cacheLanguageCode(languageCode: languageCode);
+      await _dataSource.cacheLanguageCode(languageCode: languageCode);
       return const Right(null);
     } catch (e) {
       return Left(Failure(message: e.toString()));

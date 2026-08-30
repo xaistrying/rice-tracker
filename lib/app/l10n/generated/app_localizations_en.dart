@@ -109,4 +109,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteAllPurchaserConfirmHinText => 'Type DELETE to confirm';
+
+  @override
+  String get allTime => 'All';
+
+  @override
+  String get thisWeek => 'This week';
+
+  @override
+  String get thisMonth => 'This month';
+
+  @override
+  String get customRange => 'Custom';
+
+  @override
+  String get selectDateRange => 'Select a date range';
+
+  @override
+  String get noPurchaserInPeriodTitle => 'Nothing in this period';
+
+  @override
+  String get noPurchaserInPeriodDescription =>
+      'No one was added in the selected period. Try a different range or clear the filter.';
 }

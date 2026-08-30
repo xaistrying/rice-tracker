@@ -8,28 +8,28 @@ class AppPrefsServiceHelper {
   final _pref = getIt<SharedPreferences>();
 
   /// Set String Value
-  Future _setStringValue(String key, String value) async {
-    await _pref.setString(key, value);
+  Future<bool> _setStringValue(String key, String value) {
+    return _pref.setString(key, value);
   }
 
   /// Set StringList Value
-  Future _setStringListValue(String key, List<String> value) async {
-    await _pref.setStringList(key, value);
+  Future<bool> _setStringListValue(String key, List<String> value) {
+    return _pref.setStringList(key, value);
   }
 
   /// Set Int Value
-  Future _setIntValue(String key, int value) async {
-    await _pref.setInt(key, value);
+  Future<bool> _setIntValue(String key, int value) {
+    return _pref.setInt(key, value);
   }
 
   /// Set Boolean Value
-  Future _setBooleanValue(String key, bool value) async {
-    await _pref.setBool(key, value);
+  Future<bool> _setBooleanValue(String key, bool value) {
+    return _pref.setBool(key, value);
   }
 
   /// Set Double Value
-  Future _setDoubleValue(String key, double value) async {
-    await _pref.setDouble(key, value);
+  Future<bool> _setDoubleValue(String key, double value) {
+    return _pref.setDouble(key, value);
   }
 
   /// Get String Value
@@ -58,19 +58,30 @@ class AppPrefsServiceHelper {
   }
 
   /// Set Value (Generic)
+  ///
+  /// Throws if the value could not be persisted. The platform reports a
+  /// refused write (a full or unwritable store) by returning false rather
+  /// than throwing, so that result has to be turned into an error here or it
+  /// is invisible to callers.
   Future<void> setValue<T>(String key, T value) async {
+    final bool written;
+
     if (value is String) {
-      await _setStringValue(key, value);
+      written = await _setStringValue(key, value);
     } else if (value is List<String>) {
-      await _setStringListValue(key, value);
+      written = await _setStringListValue(key, value);
     } else if (value is int) {
-      await _setIntValue(key, value);
+      written = await _setIntValue(key, value);
     } else if (value is bool) {
-      await _setBooleanValue(key, value);
+      written = await _setBooleanValue(key, value);
     } else if (value is double) {
-      await _setDoubleValue(key, value);
+      written = await _setDoubleValue(key, value);
     } else {
       throw Exception('Unsupported type');
+    }
+
+    if (!written) {
+      throw Exception('Failed to persist value for "$key"');
     }
   }
 

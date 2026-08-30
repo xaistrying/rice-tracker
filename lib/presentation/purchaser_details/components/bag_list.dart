@@ -24,45 +24,44 @@ class BagList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // [purchaser] is re-read from the cubit by PurchaserDetailsScreen on every
+    // state change, so this does not subscribe to the cubit itself. Doing so
+    // would only rebuild these widgets with the very same data.
+    final bags = purchaser.listOfRiceBagWeights ?? [];
+    final int numberOfBags = bags.length;
+
+    if (numberOfBags == 0) {
+      return Expanded(
+        child: NoSomethingYetTile(
+          title: context.loc.noRiceBagTitle,
+          description: context.loc.noRiceBagDescription,
+        ),
+      );
+    }
+
+    final int rows = (numberOfBags + 2) ~/ 3;
     return Expanded(
-      child: BlocBuilder<AppDataCubit, AppDataState>(
-        builder: (context, state) {
-          final bags = purchaser.listOfRiceBagWeights ?? [];
-          final int numberOfBags = bags.length;
-
-          if (numberOfBags == 0) {
-            return NoSomethingYetTile(
-              title: context.loc.noRiceBagTitle,
-              description: context.loc.noRiceBagDescription,
-            );
-          }
-
-          final int rows = (numberOfBags + 2) ~/ 3;
-          return ListView.separated(
-            itemCount: rows,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimens.padding16,
-            ),
-            physics: ClampingScrollPhysics(),
-            itemBuilder: (context, rowIndex) {
-              final start = rowIndex * 3;
-              return Row(
-                spacing: AppDimens.padding8,
-                children: List.generate(3, (colIndex) {
-                  final idx = start + colIndex;
-                  if (idx >= numberOfBags) {
-                    return const Expanded(child: SizedBox());
-                  }
-                  return Expanded(
-                    child: _buildBagCell(context, purchaser, bags, idx),
-                  );
-                }),
+      child: ListView.separated(
+        itemCount: rows,
+        padding: const EdgeInsets.symmetric(horizontal: AppDimens.padding16),
+        physics: ClampingScrollPhysics(),
+        itemBuilder: (context, rowIndex) {
+          final start = rowIndex * 3;
+          return Row(
+            spacing: AppDimens.padding8,
+            children: List.generate(3, (colIndex) {
+              final idx = start + colIndex;
+              if (idx >= numberOfBags) {
+                return const Expanded(child: SizedBox());
+              }
+              return Expanded(
+                child: _buildBagCell(context, purchaser, bags, idx),
               );
-            },
-            separatorBuilder: (context, index) =>
-                SizedBox(height: AppDimens.padding8),
+            }),
           );
         },
+        separatorBuilder: (context, index) =>
+            SizedBox(height: AppDimens.padding8),
       ),
     );
   }
@@ -113,94 +112,96 @@ class BagList extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
       ),
       barrierColor: AppColor.barrierColor,
-      builder: (context) => Container(
-        width: double.maxFinite,
-        padding: const EdgeInsets.all(AppDimens.padding16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppDimens.padding12,
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                '${context.loc.bag} ${idx + 1}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: AppDimens.fontSize16,
-                  color: AppColor.foreground,
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimens.padding16,
-                vertical: AppDimens.padding12,
-              ),
-              decoration: BoxDecoration(
-                color: AppColor.border,
-                border: Border.all(color: AppColor.grey),
-                borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    '${context.loc.weight}:',
-                    style: const TextStyle(
-                      fontSize: AppDimens.fontSizeDefault,
-                      color: AppColor.foreground,
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    '${(bag.weight ?? 0.0).toStringAsFixed(1)} kg',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: AppDimens.fontSizeDefault,
-                      color: AppColor.foreground,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              width: double.maxFinite,
-              child: IconButton(
-                onPressed: () {
-                  context.read<AppDataCubit>().removeBagFromPurchaser(
-                    purchaserId: purchaser.id,
-                    bagId: bag.id,
-                  );
-                  context.pop();
-                },
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimens.padding16,
-                    vertical: AppDimens.padding12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      AppDimens.borderRadius8,
-                    ),
-                  ),
-                  side: BorderSide(
-                    width: AppDimens.borderWidth1,
-                    color: AppColor.destructive,
-                  ),
-                  splashFactory: NoSplash.splashFactory,
-                  overlayColor: Colors.transparent,
-                ),
-                icon: SvgPicture.asset(
-                  ImageConstant.delete,
-                  colorFilter: const ColorFilter.mode(
-                    AppColor.destructive,
-                    BlendMode.srcIn,
+      builder: (context) => SafeArea(
+        child: Container(
+          width: double.maxFinite,
+          padding: const EdgeInsets.all(AppDimens.padding16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: AppDimens.padding12,
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  '${context.loc.bag} ${idx + 1}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: AppDimens.fontSize16,
+                    color: AppColor.foreground,
                   ),
                 ),
               ),
-            ),
-          ],
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimens.padding16,
+                  vertical: AppDimens.padding12,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColor.border,
+                  border: Border.all(color: AppColor.grey),
+                  borderRadius: BorderRadius.circular(AppDimens.borderRadius8),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      '${context.loc.weight}:',
+                      style: const TextStyle(
+                        fontSize: AppDimens.fontSizeDefault,
+                        color: AppColor.foreground,
+                      ),
+                    ),
+                    Spacer(),
+                    Text(
+                      '${(bag.weight ?? 0.0).toStringAsFixed(1)} kg',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: AppDimens.fontSizeDefault,
+                        color: AppColor.foreground,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: double.maxFinite,
+                child: IconButton(
+                  onPressed: () {
+                    context.read<AppDataCubit>().removeBagFromPurchaser(
+                      purchaserId: purchaser.id,
+                      bagId: bag.id,
+                    );
+                    context.pop();
+                  },
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimens.padding16,
+                      vertical: AppDimens.padding12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppDimens.borderRadius8,
+                      ),
+                    ),
+                    side: BorderSide(
+                      width: AppDimens.borderWidth1,
+                      color: AppColor.destructive,
+                    ),
+                    splashFactory: NoSplash.splashFactory,
+                    overlayColor: Colors.transparent,
+                  ),
+                  icon: SvgPicture.asset(
+                    ImageConstant.delete,
+                    colorFilter: const ColorFilter.mode(
+                      AppColor.destructive,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     ).then((_) {

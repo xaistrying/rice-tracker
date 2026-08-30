@@ -11,12 +11,18 @@ import '../../../app/constants/image_constant.dart';
 import '../../../app/extension/context_extension.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
-import '../../../domain/models/purchaser_model.dart';
+import '../../../domain/models/purchaser_filter.dart';
+import 'period_filter_chips.dart';
 
 class SearchWithStats extends StatelessWidget {
-  const SearchWithStats({super.key, required this.searchController});
+  const SearchWithStats({
+    super.key,
+    required this.searchController,
+    required this.filter,
+  });
 
   final TextEditingController searchController;
+  final ValueNotifier<PurchaserFilter> filter;
 
   @override
   Widget build(BuildContext context) {
@@ -80,29 +86,26 @@ class SearchWithStats extends StatelessWidget {
             ),
           ),
 
+          // Period filter
+          PeriodFilterChips(filter: filter),
+
           // Stats
           BlocBuilder<AppDataCubit, AppDataState>(
             builder: (context, state) {
               final purchaserList = state.data.purchaserList;
-              final totalWeights = purchaserList.fold(
-                0.0,
-                (previousValue, element) =>
-                    previousValue + (element.totalWeight ?? 0.0),
-              );
               return ValueListenableBuilder(
-                valueListenable: searchController,
-                builder: (context, value, child) {
-                  List<PurchaserModel> filterdPurchaserList =
-                      state.data.purchaserList;
-                  if (value.text != '') {
-                    filterdPurchaserList = purchaserList
-                        .where(
-                          (e) => (e.name ?? '').toLowerCase().contains(
-                            value.text.toLowerCase(),
-                          ),
-                        )
-                        .toList();
-                  }
+                valueListenable: filter,
+                builder: (context, activeFilter, child) {
+                  final filterdPurchaserList = activeFilter.apply(
+                    purchaserList,
+                  );
+                  // The total tracks what is on screen, so it stays consistent
+                  // with the count beside it.
+                  final totalWeights = filterdPurchaserList.fold(
+                    0.0,
+                    (previousValue, element) =>
+                        previousValue + (element.totalWeight ?? 0.0),
+                  );
                   return Row(
                     children: [
                       // Number of people

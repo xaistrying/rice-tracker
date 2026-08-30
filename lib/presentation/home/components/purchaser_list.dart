@@ -15,15 +15,21 @@ import 'package:rice_tracker/app/extension/context_extension.dart';
 import 'package:rice_tracker/app/theme/app_dimens.dart';
 import 'package:rice_tracker/app/widgets/card_widget.dart';
 import 'package:rice_tracker/app/widgets/no_something_yet_tile.dart';
+import 'package:rice_tracker/domain/models/purchaser_filter.dart';
 import 'package:rice_tracker/domain/models/purchaser_model.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/app_color.dart';
 
 class PurchaserList extends StatelessWidget {
-  const PurchaserList({super.key, required this.searchController});
+  const PurchaserList({
+    super.key,
+    required this.searchController,
+    required this.filter,
+  });
 
   final TextEditingController searchController;
+  final ValueNotifier<PurchaserFilter> filter;
 
   @override
   Widget build(BuildContext context) {
@@ -37,29 +43,36 @@ class PurchaserList extends StatelessWidget {
           );
         }
         return ValueListenableBuilder(
-          valueListenable: searchController,
-          builder: (context, value, child) {
-            List<PurchaserModel> purchaserList = state.data.purchaserList;
-            if (value.text != '') {
-              purchaserList = purchaserList
-                  .where(
-                    (e) => (e.name ?? '').toLowerCase().contains(
-                      value.text.toLowerCase(),
-                    ),
-                  )
-                  .toList();
+          valueListenable: filter,
+          builder: (context, activeFilter, child) {
+            final purchaserList = activeFilter.apply(state.data.purchaserList);
+
+            if (purchaserList.isEmpty) {
+              return NoSomethingYetTile(
+                title: context.loc.noPurchaserInPeriodTitle,
+                description: context.loc.noPurchaserInPeriodDescription,
+              );
             }
+
             // Group filtered purchasers by date
             final Map<String, List<PurchaserModel>> groups = {};
             for (final p in purchaserList) {
-              final datePart = (p.dateAdded ?? '')
-                  .split(' ')
-                  .first; // dd/MM/yyyy
-              groups.putIfAbsent(datePart, () => []).add(p);
+              groups.putIfAbsent(purchaserDayKey(p), () => []).add(p);
             }
 
+            // Sort chronologically (newest first). Comparing the raw
+            // 'dd/MM/yyyy' strings would sort by day-of-month before month
+            // and year, which breaks across month and year boundaries.
             final sortedKeys = groups.keys.toList()
-              ..sort((a, b) => b.compareTo(a));
+              ..sort((a, b) {
+                final dateA = parseDayKey(a);
+                final dateB = parseDayKey(b);
+                if (dateA == null || dateB == null) {
+                  if (dateA == null && dateB == null) return 0;
+                  return dateA == null ? 1 : -1;
+                }
+                return dateB.compareTo(dateA);
+              });
 
             return CustomScrollView(
               scrollBehavior: ScrollConfiguration.of(
@@ -77,9 +90,11 @@ class PurchaserList extends StatelessWidget {
                       ),
                       child: BlocBuilder<AppConfigCubit, AppConfigState>(
                         builder: (context, state) {
-                          String headerLabel;
-                          try {
-                            final dt = DateFormat('dd/MM/yyyy').parse(dateKey);
+                          final String headerLabel;
+                          final dt = parseDayKey(dateKey);
+                          if (dt == null) {
+                            headerLabel = dateKey;
+                          } else {
                             final today = DateTime.now();
                             final dateOnlyNow = DateTime(
                               today.year,
@@ -103,8 +118,6 @@ class PurchaserList extends StatelessWidget {
                                 'EEEE, dd/MM/yyyy',
                               ).format(dt);
                             }
-                          } catch (_) {
-                            headerLabel = dateKey;
                           }
                           return Text(
                             headerLabel,

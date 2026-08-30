@@ -63,5 +63,19 @@
   "@deleteAllPurchaserDialogDescription": {},
   "deleteAllPurchaserDialogDescription": "This action will permanently delete all purchasers and cannot be undone.",
   "@deleteAllPurchaserConfirmHinText": {},
-  "deleteAllPurchaserConfirmHinText": "Type DELETE to confirm"
+  "deleteAllPurchaserConfirmHinText": "Type DELETE to confirm",
+  "@allTime": {},
+  "allTime": "All",
+  "@thisWeek": {},
+  "thisWeek": "This week",
+  "@thisMonth": {},
+  "thisMonth": "This month",
+  "@customRange": {},
+  "customRange": "Custom",
+  "@selectDateRange": {},
+  "selectDateRange": "Select a date range",
+  "@noPurchaserInPeriodTitle": {},
+  "noPurchaserInPeriodTitle": "Nothing in this period",
+  "@noPurchaserInPeriodDescription": {},
+  "noPurchaserInPeriodDescription": "No one was added in the selected period. Try a different range or clear the filter."
 }

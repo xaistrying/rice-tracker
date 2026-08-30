@@ -37,36 +37,44 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppDimens.padding16),
       decoration: BoxDecoration(
         color: AppColor.card,
         border: Border(top: BorderSide(width: 1, color: AppColor.border)),
       ),
-      child: Column(
-        spacing: AppDimens.padding16,
-        children: [
-          // Stats
-          Row(
-            spacing: AppDimens.padding8,
+      // Scaffold only insets its body for the system navigation bar when it
+      // has a bottomNavigationBar or persistentFooterButtons, and this screen
+      // has neither, so the input would sit underneath it. The card keeps
+      // painting behind the bar; only the content is lifted clear of it.
+      //
+      // MediaQuery.padding.bottom is already zero while the keyboard is up,
+      // so this adds nothing on top of the resize Scaffold has done.
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.all(AppDimens.padding16),
+          child: Column(
+            spacing: AppDimens.padding16,
             children: [
-              // Number of Bags
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimens.padding16,
-                    vertical: AppDimens.padding12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColor.border,
-                    border: Border.all(color: AppColor.grey, width: 2),
-                    borderRadius: BorderRadius.circular(
-                      AppDimens.borderRadius8,
-                    ),
-                  ),
-                  child: Center(
-                    child: BlocBuilder<AppDataCubit, AppDataState>(
-                      builder: (context, state) {
-                        return RichText(
+              // Stats
+              Row(
+                spacing: AppDimens.padding8,
+                children: [
+                  // Number of Bags
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimens.padding16,
+                        vertical: AppDimens.padding12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColor.border,
+                        border: Border.all(color: AppColor.grey, width: 2),
+                        borderRadius: BorderRadius.circular(
+                          AppDimens.borderRadius8,
+                        ),
+                      ),
+                      child: Center(
+                        child: RichText(
                           text: TextSpan(
                             children: [
                               TextSpan(
@@ -87,31 +95,27 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                               ),
                             ],
                           ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
 
-              // Total Weight
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimens.padding16,
-                    vertical: AppDimens.padding12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColor.lightPrimary,
-                    border: Border.all(color: AppColor.primary, width: 2),
-                    borderRadius: BorderRadius.circular(
-                      AppDimens.borderRadius8,
-                    ),
-                  ),
-                  child: Center(
-                    child: BlocBuilder<AppDataCubit, AppDataState>(
-                      builder: (context, state) {
-                        return RichText(
+                  // Total Weight
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppDimens.padding16,
+                        vertical: AppDimens.padding12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColor.lightPrimary,
+                        border: Border.all(color: AppColor.primary, width: 2),
+                        borderRadius: BorderRadius.circular(
+                          AppDimens.borderRadius8,
+                        ),
+                      ),
+                      child: Center(
+                        child: RichText(
                           maxLines: 1,
                           text: TextSpan(
                             text: (widget.purchaser.totalWeight ?? 0.0)
@@ -132,101 +136,103 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
                               ),
                             ],
                           ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
                   ),
+                ],
+              ),
+
+              // Rice Amount Input
+              IntrinsicHeight(
+                child: Row(
+                  spacing: AppDimens.padding8,
+
+                  children: [
+                    Expanded(
+                      child: TextFormFieldWidget(
+                        controller: riceAmountController,
+                        onTapOutsideEnabled: false,
+
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
+                          SinglePeriodEnforcer(),
+                        ],
+                        keyboardType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        textInputAction: TextInputAction.done,
+
+                        hintText: context.loc.enterAnAmount,
+                      ),
+                    ),
+
+                    // Action Button
+                    SizedBox(
+                      width: 60,
+                      child: ValueListenableBuilder(
+                        valueListenable: riceAmountController,
+                        builder: (context, value, child) => IconButton(
+                          onPressed: () {
+                            if (double.tryParse(value.text) != null) {
+                              final number = double.parse(value.text);
+
+                              if (number < 0 || number >= 1000) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return DialogWidget(
+                                      title: context.loc.warning,
+                                      body: Text(
+                                        context
+                                            .loc
+                                            .warningRiceAmountDescription,
+                                      ),
+                                    );
+                                  },
+                                );
+                              } else {
+                                context.read<AppDataCubit>().addBagToPurchaser(
+                                  id: widget.purchaser.id,
+                                  weight: value.text,
+                                );
+                              }
+                            }
+                            riceAmountController.clear();
+                          },
+                          style: IconButton.styleFrom(
+                            backgroundColor: riceAmountController.text == ''
+                                ? AppColor.lightPrimary
+                                : AppColor.primary,
+                            disabledBackgroundColor: AppColor.lightPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppDimens.borderRadius8,
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(AppDimens.padding16),
+                            splashFactory: NoSplash.splashFactory,
+                            overlayColor: Colors.transparent,
+                          ),
+                          icon: SvgPicture.asset(
+                            ImageConstant.add,
+                            colorFilter: ColorFilter.mode(
+                              riceAmountController.text == ''
+                                  ? AppColor.grey
+                                  : AppColor.foreground,
+                              BlendMode.srcIn,
+                            ),
+                            height: AppDimens.iconSize20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-
-          // Rice Amount Input
-          IntrinsicHeight(
-            child: Row(
-              spacing: AppDimens.padding8,
-
-              children: [
-                Expanded(
-                  child: TextFormFieldWidget(
-                    controller: riceAmountController,
-                    onTapOutsideEnabled: false,
-
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[\d\.]')),
-                      SinglePeriodEnforcer(),
-                    ],
-                    keyboardType: TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    textInputAction: TextInputAction.done,
-
-                    hintText: context.loc.enterAnAmount,
-                  ),
-                ),
-
-                // Action Button
-                SizedBox(
-                  width: 60,
-                  child: ValueListenableBuilder(
-                    valueListenable: riceAmountController,
-                    builder: (context, value, child) => IconButton(
-                      onPressed: () {
-                        if (double.tryParse(value.text) != null) {
-                          final number = double.parse(value.text);
-
-                          if (number < 0 || number >= 1000) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return DialogWidget(
-                                  title: context.loc.warning,
-                                  body: Text(
-                                    context.loc.warningRiceAmountDescription,
-                                  ),
-                                );
-                              },
-                            );
-                          } else {
-                            context.read<AppDataCubit>().addBagToPurchaser(
-                              id: widget.purchaser.id,
-                              weight: value.text,
-                            );
-                          }
-                        }
-                        riceAmountController.clear();
-                      },
-                      style: IconButton.styleFrom(
-                        backgroundColor: riceAmountController.text == ''
-                            ? AppColor.lightPrimary
-                            : AppColor.primary,
-                        disabledBackgroundColor: AppColor.lightPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            AppDimens.borderRadius8,
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(AppDimens.padding16),
-                        splashFactory: NoSplash.splashFactory,
-                        overlayColor: Colors.transparent,
-                      ),
-                      icon: SvgPicture.asset(
-                        ImageConstant.add,
-                        colorFilter: ColorFilter.mode(
-                          riceAmountController.text == ''
-                              ? AppColor.grey
-                              : AppColor.foreground,
-                          BlendMode.srcIn,
-                        ),
-                        height: AppDimens.iconSize20,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

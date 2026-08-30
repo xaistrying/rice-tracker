@@ -16,7 +16,7 @@ class PurchaserRepositoryImpl implements PurchaserRepository {
     required List<PurchaserModel> purchaserList,
   }) async {
     try {
-      _dataSource.cachePurchaserList(purchaserList: purchaserList);
+      await _dataSource.cachePurchaserList(purchaserList: purchaserList);
       return const Right(null);
     } catch (e) {
       return Left(Failure(message: e.toString()));
@@ -36,7 +36,7 @@ class PurchaserRepositoryImpl implements PurchaserRepository {
   @override
   Future<Either<Failure, void>> cacheDate({required String date}) async {
     try {
-      _dataSource.cacheDate(date: date);
+      await _dataSource.cacheDate(date: date);
       return const Right(null);
     } catch (e) {
       return Left(Failure(message: e.toString()));
