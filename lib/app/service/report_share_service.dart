@@ -10,7 +10,11 @@ import 'package:flutter/rendering.dart';
 // Package imports:
 import 'package:share_plus/share_plus.dart';
 
+// Package imports:
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 // Project imports:
+import '../bloc/app_config/app_config_cubit.dart';
 import '../../domain/models/purchaser_model.dart';
 import '../extension/string_extension.dart';
 import '../../domain/models/purchaser_report.dart';
@@ -82,7 +86,12 @@ class ReportShareService {
     BuildContext context,
     PurchaserModel purchaser,
   ) async {
-    final report = PurchaserReport(purchaser);
+    // Read once, up front: the report must show one consistent set of figures
+    // even if the switch is flipped while the image is being rendered.
+    final report = PurchaserReport(
+      purchaser,
+      policy: context.read<AppConfigCubit>().state.data.tarePolicy,
+    );
 
     final bytes = await capture(context, PurchaserReportCard(report: report));
 

@@ -181,4 +181,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportBags => 'Bags received';
+
+  @override
+  String get reportGross => 'Weighed';
+
+  @override
+  String get tareTitle => 'Bag tare';
+
+  @override
+  String get tareDescription =>
+      'Take the weight of the empty sacks off every total.';
+
+  @override
+  String get tareDefaultLabel => 'Default';
 }

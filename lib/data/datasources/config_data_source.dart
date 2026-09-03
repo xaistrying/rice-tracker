@@ -12,6 +12,19 @@ abstract class ConfigDataSource {
   /// over while the app is in the background.
   Future<void> cacheDate({required String date});
   String getDate();
+
+  /// Whether the weight of the empty sacks is taken off every total.
+  ///
+  /// Null when it has never been set, which the repository reads as off: an
+  /// upgrade must not silently restate every total already on file.
+  Future<void> cacheTareEnabled({required bool enabled});
+  bool? getTareEnabled();
+
+  /// The rate a purchaser starts at, as the pair it is quoted in.
+  ///
+  /// Null unless both halves were written.
+  Future<void> cacheTareDefaultRate({required int bags, required int kgTenths});
+  ({int bags, int kgTenths})? getTareDefaultRate();
 }
 
 class ConfigDataSourceImpl implements ConfigDataSource {
@@ -21,6 +34,9 @@ class ConfigDataSourceImpl implements ConfigDataSource {
 
   static const languageCodeKey = 'LANGUAGE_CODE_KEY';
   static const dateKey = 'DATE_KEY';
+  static const tareEnabledKey = 'TARE_ENABLED_KEY';
+  static const tareDefaultBagsKey = 'TARE_DEFAULT_BAGS_KEY';
+  static const tareDefaultKgTenthsKey = 'TARE_DEFAULT_KG_TENTHS_KEY';
 
   @override
   Future<void> cacheLanguageCode({required String languageCode}) async {
@@ -40,5 +56,37 @@ class ConfigDataSourceImpl implements ConfigDataSource {
   @override
   String getDate() {
     return _pref.getValue<String>(dateKey) ?? '';
+  }
+
+  @override
+  Future<void> cacheTareEnabled({required bool enabled}) async {
+    await _pref.setValue<bool>(tareEnabledKey, enabled);
+  }
+
+  @override
+  bool? getTareEnabled() {
+    return _pref.getValue<bool>(tareEnabledKey);
+  }
+
+  @override
+  Future<void> cacheTareDefaultRate({
+    required int bags,
+    required int kgTenths,
+  }) async {
+    await _pref.setValue<int>(tareDefaultBagsKey, bags);
+    await _pref.setValue<int>(tareDefaultKgTenthsKey, kgTenths);
+  }
+
+  @override
+  ({int bags, int kgTenths})? getTareDefaultRate() {
+    final bags = _pref.getValue<int>(tareDefaultBagsKey);
+    final kgTenths = _pref.getValue<int>(tareDefaultKgTenthsKey);
+
+    // Both or neither. The two are written in sequence, so a write refused
+    // between them leaves one half of a rate behind, and half a rate is not a
+    // rate — the caller falls back to the standard one.
+    if (bags == null || kgTenths == null) return null;
+
+    return (bags: bags, kgTenths: kgTenths);
   }
 }

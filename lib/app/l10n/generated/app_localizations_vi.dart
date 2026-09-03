@@ -181,4 +181,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get reportBags => 'Số bao nhận';
+
+  @override
+  String get reportGross => 'Khối lượng cân';
+
+  @override
+  String get tareTitle => 'Trừ bì';
+
+  @override
+  String get tareDescription =>
+      'Trừ khối lượng bao không ra khỏi tổng khối lượng.';
+
+  @override
+  String get tareDefaultLabel => 'Mặc định';
 }

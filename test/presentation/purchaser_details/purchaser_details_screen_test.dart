@@ -7,10 +7,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Project imports:
+import 'package:rice_tracker/app/bloc/app_config/app_config_cubit.dart';
 import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
 import 'package:rice_tracker/app/di/injector.dart';
 import 'package:rice_tracker/app/l10n/generated/app_localizations.dart';
 import 'package:rice_tracker/domain/models/purchaser_model.dart';
+import 'package:rice_tracker/domain/models/tare_rate.dart';
 import 'package:rice_tracker/presentation/purchaser_details/purchaser_details_screen.dart';
 
 /// Every string the screen is currently showing.
@@ -33,16 +35,19 @@ String visibleText(WidgetTester tester) {
 
 void main() {
   late AppDataCubit cubit;
+  late AppConfigCubit configCubit;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     await getIt.reset();
     await initDependencies();
     cubit = AppDataCubit();
+    configCubit = AppConfigCubit();
   });
 
   tearDown(() async {
     await cubit.close();
+    await configCubit.close();
   });
 
   /// Pushes the screen the way the router does: with the purchaser as it is
@@ -56,8 +61,11 @@ void main() {
     final pushed = cubit.state.data.purchaserList.single;
 
     await tester.pumpWidget(
-      BlocProvider<AppDataCubit>.value(
-        value: cubit,
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<AppDataCubit>.value(value: cubit),
+          BlocProvider<AppConfigCubit>.value(value: configCubit),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -192,5 +200,101 @@ void main() {
       reason: 'typing must not have committed anything on its own',
     );
     expect(cubit.state.data.purchaserList.single.quantity, 0);
+  });
+
+  group('the sack deduction', () {
+    testWidgets('is nowhere to be seen while the switch is off', (
+      tester,
+    ) async {
+      final pushed = await pumpDetailsFor(tester, name: 'Hana');
+      await cubit.addBagToPurchaser(id: pushed.id, weight: '10');
+      await tester.pump();
+
+      expect(find.text('Bag tare:'), findsNothing);
+      expect(
+        visibleText(tester),
+        contains('10.0'),
+        reason: 'the total is what was weighed until the switch is on',
+      );
+      expect(
+        find.byType(EditableText),
+        findsOneWidget,
+        reason: 'only the weight field; the rate boxes must not be built',
+      );
+    });
+
+    testWidgets('shows the net, with the arithmetic under it', (tester) async {
+      await configCubit.setTareEnabled(true);
+
+      final pushed = await pumpDetailsFor(tester, name: 'Ivy');
+      for (var i = 0; i < 4; i++) {
+        await cubit.addBagToPurchaser(id: pushed.id, weight: '10');
+      }
+      await tester.pump();
+
+      final shown = visibleText(tester);
+
+      // Four bags at three to the kilo: 40.0 weighed, 1.4 of sack, 38.6 owed.
+      expect(shown, contains('38.6'));
+      expect(
+        shown,
+        contains('40.0 − 1.4'),
+        reason: 'a total that does not add up to the bags above reads as a bug',
+      );
+      expect(find.text('Bag tare:'), findsOneWidget);
+    });
+
+    testWidgets('deducts nothing, and explains nothing, with no bags', (
+      tester,
+    ) async {
+      await configCubit.setTareEnabled(true);
+      await pumpDetailsFor(tester, name: 'Jo');
+
+      expect(
+        visibleText(tester),
+        isNot(contains('−')),
+        reason: 'there is no arithmetic to show when nothing was deducted',
+      );
+    });
+
+    testWidgets('a rate typed here is kept on that purchaser', (tester) async {
+      await configCubit.setTareEnabled(true);
+
+      final pushed = await pumpDetailsFor(tester, name: 'Kim');
+      for (var i = 0; i < 4; i++) {
+        await cubit.addBagToPurchaser(id: pushed.id, weight: '10');
+      }
+      await tester.pump();
+
+      // The bags box of the rate bar, which sits above the weight field.
+      await tester.enterText(find.byType(TextFormField).first, '2');
+      await tester.pumpAndSettle();
+
+      expect(
+        cubit.state.data.purchaserList.single.tareRate,
+        const TareRate(bags: 2, kgTenths: 10),
+      );
+      expect(
+        visibleText(tester),
+        contains('38.0'),
+        reason: 'two to the kilo takes 2.0 off the 40.0 weighed',
+      );
+    });
+
+    testWidgets('a new purchaser starts at the default rate', (tester) async {
+      // Stamped at creation rather than left to follow, so that changing the
+      // default later does not restate a load already weighed and settled.
+      await configCubit.setTareEnabled(true);
+      await configCubit.setTareDefaultRate(
+        const TareRate(bags: 4, kgTenths: 10),
+      );
+
+      await pumpDetailsFor(tester, name: 'Lan');
+
+      expect(
+        cubit.state.data.purchaserList.single.tareRate,
+        const TareRate(bags: 4, kgTenths: 10),
+      );
+    });
   });
 }

@@ -107,5 +107,13 @@
   "@reportTotal": {},
   "reportTotal": "Tổng cộng",
   "@reportBags": {},
-  "reportBags": "Số bao nhận"
+  "reportBags": "Số bao nhận",
+  "@reportGross": {},
+  "reportGross": "Khối lượng cân",
+  "@tareTitle": {},
+  "tareTitle": "Trừ bì",
+  "@tareDescription": {},
+  "tareDescription": "Trừ khối lượng bao không ra khỏi tổng khối lượng.",
+  "@tareDefaultLabel": {},
+  "tareDefaultLabel": "Mặc định"
 }

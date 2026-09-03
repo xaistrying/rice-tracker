@@ -107,5 +107,13 @@
   "@reportTotal": {},
   "reportTotal": "Total",
   "@reportBags": {},
-  "reportBags": "Bags received"
+  "reportBags": "Bags received",
+  "@reportGross": {},
+  "reportGross": "Weighed",
+  "@tareTitle": {},
+  "tareTitle": "Bag tare",
+  "@tareDescription": {},
+  "tareDescription": "Take the weight of the empty sacks off every total.",
+  "@tareDefaultLabel": {},
+  "tareDefaultLabel": "Default"
 }

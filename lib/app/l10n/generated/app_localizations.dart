@@ -408,6 +408,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bags received'**
   String get reportBags;
+
+  /// No description provided for @reportGross.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighed'**
+  String get reportGross;
+
+  /// No description provided for @tareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bag tare'**
+  String get tareTitle;
+
+  /// No description provided for @tareDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Take the weight of the empty sacks off every total.'**
+  String get tareDescription;
+
+  /// No description provided for @tareDefaultLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get tareDefaultLabel;
 }
 
 class _AppLocalizationsDelegate

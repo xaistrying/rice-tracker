@@ -10,6 +10,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
 import 'package:rice_tracker/app/extension/context_extension.dart';
 import 'package:rice_tracker/app/widgets/dialog_widget.dart';
+import '../../../app/bloc/app_config/app_config_cubit.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/theme/app_color.dart';
 import '../../../app/theme/app_dimens.dart';
@@ -34,6 +35,58 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
     super.dispose();
   }
 
+  /// The weight this purchaser is settled on, with the arithmetic under it.
+  ///
+  /// The big number is the one that gets paid on, so it is the net. Without
+  /// the line below it the total would simply not add up to the bags on the
+  /// screen above, which reads as a bug rather than as a deduction.
+  Widget _weight(BuildContext context) {
+    final policy = context.watch<AppConfigCubit>().state.data.tarePolicy;
+
+    final gross = widget.purchaser.totalWeight;
+    final deduction = policy.deductionFor(widget.purchaser);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text.rich(
+          maxLines: 1,
+          TextSpan(
+            text: policy.netWeightOf(widget.purchaser).toStringAsFixed(1),
+            style: const TextStyle(
+              fontSize: AppDimens.fontSize16,
+              fontWeight: FontWeight.bold,
+              color: AppColor.primary,
+            ),
+            children: const [
+              TextSpan(
+                text: ' kg',
+                style: TextStyle(
+                  fontSize: AppDimens.fontSizeDefault,
+                  fontWeight: FontWeight.bold,
+                  color: AppColor.primary,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Nothing to explain when nothing was taken off — an empty purchaser
+        // deducts zero even with the switch on.
+        if (deduction > 0)
+          Text(
+            '${gross.toStringAsFixed(1)} − ${deduction.toStringAsFixed(1)}',
+            maxLines: 1,
+            style: const TextStyle(
+              fontSize: AppDimens.fontSizeSmall,
+              color: AppColor.grey,
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -56,92 +109,74 @@ class _RiceInputWithStatsState extends State<RiceInputWithStats> {
             spacing: AppDimens.padding16,
             children: [
               // Stats
-              Row(
-                spacing: AppDimens.padding8,
-                children: [
-                  // Number of Bags
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppDimens.padding16,
-                        vertical: AppDimens.padding12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColor.border,
-                        border: Border.all(color: AppColor.grey, width: 2),
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
+              //
+              // Wrapped so the two boxes stay the same height: the weight one
+              // grows a second line whenever the sacks are being deducted.
+              IntrinsicHeight(
+                child: Row(
+                  spacing: AppDimens.padding8,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Number of Bags
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppDimens.padding16,
+                          vertical: AppDimens.padding12,
                         ),
-                      ),
-                      child: Center(
-                        child: RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${widget.purchaser.quantity}',
-                                style: TextStyle(
-                                  fontSize: AppDimens.fontSize16,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColor.foreground,
+                        decoration: BoxDecoration(
+                          color: AppColor.border,
+                          border: Border.all(color: AppColor.grey, width: 2),
+                          borderRadius: BorderRadius.circular(
+                            AppDimens.borderRadius8,
+                          ),
+                        ),
+                        child: Center(
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '${widget.purchaser.quantity}',
+                                  style: TextStyle(
+                                    fontSize: AppDimens.fontSize16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColor.foreground,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text: ' ${context.loc.bags}',
-                                style: TextStyle(
-                                  fontSize: AppDimens.fontSizeDefault,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColor.foreground,
+                                TextSpan(
+                                  text: ' ${context.loc.bags}',
+                                  style: TextStyle(
+                                    fontSize: AppDimens.fontSizeDefault,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColor.foreground,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
 
-                  // Total Weight
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppDimens.padding16,
-                        vertical: AppDimens.padding12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColor.lightPrimary,
-                        border: Border.all(color: AppColor.primary, width: 2),
-                        borderRadius: BorderRadius.circular(
-                          AppDimens.borderRadius8,
+                    // Total Weight
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppDimens.padding16,
+                          vertical: AppDimens.padding12,
                         ),
-                      ),
-                      child: Center(
-                        child: RichText(
-                          maxLines: 1,
-                          text: TextSpan(
-                            text: widget.purchaser.totalWeight.toStringAsFixed(
-                              1,
-                            ),
-                            style: TextStyle(
-                              fontSize: AppDimens.fontSize16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColor.primary,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: ' kg',
-                                style: TextStyle(
-                                  fontSize: AppDimens.fontSizeDefault,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColor.primary,
-                                ),
-                              ),
-                            ],
+                        decoration: BoxDecoration(
+                          color: AppColor.lightPrimary,
+                          border: Border.all(color: AppColor.primary, width: 2),
+                          borderRadius: BorderRadius.circular(
+                            AppDimens.borderRadius8,
                           ),
                         ),
+                        child: Center(child: _weight(context)),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               // Rice Amount Input

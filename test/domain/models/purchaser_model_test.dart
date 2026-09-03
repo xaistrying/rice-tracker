@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 // Project imports:
 import 'package:rice_tracker/domain/models/bag_model.dart';
 import 'package:rice_tracker/domain/models/purchaser_model.dart';
+import 'package:rice_tracker/domain/models/tare_rate.dart';
 
 PurchaserModel withBags(List<double> weights) => PurchaserModel(
   id: '1',
@@ -121,6 +122,63 @@ void main() {
 
       expect(edited.quantity, 2);
       expect(edited.totalWeight, 15.0);
+    });
+  });
+
+  group('the sack rate', () {
+    test('survives a round trip through the store', () {
+      final stored = withBags([
+        10.0,
+      ]).copyWith(tareRate: const TareRate(bags: 4, kgTenths: 5));
+
+      final read = PurchaserModel.fromJson(stored.toJson());
+
+      expect(read.tareRate, const TareRate(bags: 4, kgTenths: 5));
+    });
+
+    test('is absent on a record written before it existed', () {
+      // The stored shape gained two keys. An older record simply has neither,
+      // and must read back as 'no rate chosen' rather than as a broken one.
+      final legacy = {
+        "id": "1",
+        "name": "Alice",
+        "listOfRiceBagWeights": [
+          {"id": "b0", "weight": 10.0},
+        ],
+        "quantity": 1,
+        "totalWeight": 10.0,
+        "dateAdded": "29/08/2026 09:00",
+      };
+
+      final read = PurchaserModel.fromJson(legacy);
+
+      expect(read.tareRate, isNull);
+      expect(read.quantity, 1);
+    });
+
+    test('a stored pair that cannot be divided by is not read back', () {
+      final broken = withBags([10.0]).toJson()
+        ..['tareBags'] = 0
+        ..['tareKgTenths'] = 10;
+
+      expect(PurchaserModel.fromJson(broken).tareRate, isNull);
+    });
+
+    test('half a stored pair is not read back', () {
+      final broken = withBags([10.0]).toJson()..['tareBags'] = 4;
+
+      expect(PurchaserModel.fromJson(broken).tareRate, isNull);
+    });
+
+    test('copyWith keeps a rate it was not asked to change', () {
+      final original = withBags([
+        10.0,
+      ]).copyWith(tareRate: const TareRate(bags: 2, kgTenths: 10));
+
+      expect(
+        original.copyWith(name: 'Renamed').tareRate,
+        const TareRate(bags: 2, kgTenths: 10),
+      );
     });
   });
 }

@@ -1,7 +1,7 @@
 name: rice_tracker
 description: "A new Flutter project."
 publish_to: "none"
-version: 0.1.0+1
+version: 2.0.0+2
 
 environment:
   sdk: ^3.11.5
@@ -24,6 +24,7 @@ dependencies:
   flutter_native_splash: ^2.4.6
   flutter_sticky_header: ^0.8.0
   share_plus: ^13.3.0
+  package_info_plus: ^10.2.1
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,3 @@ flutter:
         - asset: assets/fonts/OpenSans-VariableFont_wdth,wght.ttf
         - asset: assets/fonts/OpenSans-Italic-VariableFont_wdth,wght.ttf
           style: italic
-    - family: NotoColorEmoji
-      fonts:
-        - asset: assets/fonts/NotoColorEmoji-Regular.ttf

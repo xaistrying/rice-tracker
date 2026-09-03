@@ -95,6 +95,24 @@ class PurchaserReportCard extends StatelessWidget {
               ),
           ],
 
+          // What was weighed and what came off it, shown only when something
+          // did. The recipient can check the total against the table above
+          // without being told the rate separately.
+          if (report.showsTare) ...[
+            const SizedBox(height: AppDimens.padding8),
+            _Line(
+              label: context.loc.reportGross,
+              value: '${report.grossWeight.toStringAsFixed(1)} kg',
+            ),
+            _Line(
+              label:
+                  '${context.loc.tareTitle}  '
+                  '(${report.tareRate.bags} ${context.loc.bags}'
+                  ' = ${report.tareRate.kgLabel} kg)',
+              value: '− ${report.tareDeduction.toStringAsFixed(1)} kg',
+            ),
+          ],
+
           // The result, set apart the way a grand total is: a rule above it,
           // and a second one below to close the report off.
           Container(
@@ -139,6 +157,33 @@ class PurchaserReportCard extends StatelessWidget {
     // Digits share one width, so the columns stay straight.
     fontFeatures: const [FontFeature.tabularFigures()],
   );
+}
+
+/// A label on the left and a figure on the right, above the total's rule.
+class _Line extends StatelessWidget {
+  const _Line({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    const style = TextStyle(
+      fontSize: AppDimens.fontSizeSmall,
+      color: AppColor.foreground,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppDimens.padding4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(child: Text(label, maxLines: 1, style: style)),
+          Text(value, style: style),
+        ],
+      ),
+    );
+  }
 }
 
 /// A 'Label : value' line, with the colons aligned down the block.

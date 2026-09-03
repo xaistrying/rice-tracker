@@ -10,6 +10,8 @@ import 'package:rice_tracker/app/di/injector.dart';
 import 'package:rice_tracker/domain/models/bag_model.dart';
 import 'package:rice_tracker/domain/models/purchaser_model.dart';
 import 'package:rice_tracker/domain/models/stored_purchaser_list.dart';
+import 'package:rice_tracker/domain/models/tare_policy.dart';
+import 'package:rice_tracker/domain/models/tare_rate.dart';
 import '../../../domain/repositories/config_repository.dart';
 import '../../../domain/repositories/purchaser_repository.dart';
 import '../../extension/date_time_extension.dart';
@@ -165,6 +167,7 @@ class AppDataCubit extends Cubit<AppDataState> {
           id: now.uniqueId,
           name: name,
           dateAdded: now.toTimeString(),
+          tareRate: _startingTareRate(),
         ),
       ],
     );
@@ -208,6 +211,49 @@ class AppDataCubit extends Cubit<AppDataState> {
     // so mutating in place would also change the previous state's model and
     // make the new state compare equal to the old one, dropping the emit.
     purchaserList[index] = purchaserList[index].copyWith(name: newName);
+
+    final applied = previous.copyWith(purchaserList: purchaserList);
+
+    emit(UpdatePurchaserList(applied));
+
+    await _persist(applied, previous);
+  }
+
+  /// The rate to stamp on a purchaser being created, or null to leave them
+  /// following whatever the default is at the time.
+  ///
+  /// Stamped rather than left to follow, so that changing the default later —
+  /// new sacks, a different supplier — does not restate loads that were
+  /// already weighed and settled at the old rate. Nothing is stamped while the
+  /// switch is off: there is no rate in force to record.
+  TareRate? _startingTareRate() {
+    final policy = _configRepo.getTarePolicy().getOrElse((_) => TarePolicy.off);
+
+    return policy.enabled ? policy.defaultRate : null;
+  }
+
+  /// Gives one purchaser a sack rate of their own.
+  ///
+  /// Stored on the record rather than in settings because it genuinely differs
+  /// between people: one brings sacks that go four to the kilo, another two.
+  Future<void> updatePurchaserTareRate({
+    required String? id,
+    required TareRate rate,
+  }) async {
+    // The rate is a divisor, and it arrives from two text boxes.
+    if (id == null || !rate.isValid) return;
+
+    final previous = state.data;
+    final purchaserList = [...previous.purchaserList];
+    final index = purchaserList.indexWhere((e) => e.id == id);
+
+    if (index == -1) return;
+
+    if (purchaserList[index].tareRate == rate) return;
+
+    // Replaced rather than mutated, for the reason given in
+    // [updatePurchaserName].
+    purchaserList[index] = purchaserList[index].copyWith(tareRate: rate);
 
     final applied = previous.copyWith(purchaserList: purchaserList);
 

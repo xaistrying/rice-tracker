@@ -15,21 +15,30 @@ import 'package:rice_tracker/app/theme/app_theme.dart';
 import 'package:rice_tracker/domain/models/bag_model.dart';
 import 'package:rice_tracker/domain/models/purchaser_model.dart';
 import 'package:rice_tracker/domain/models/purchaser_report.dart';
+import 'package:rice_tracker/domain/models/tare_policy.dart';
+import 'package:rice_tracker/domain/models/tare_rate.dart';
 import 'package:rice_tracker/presentation/purchaser_details/components/purchaser_report_card.dart';
 
 /// Weights that look like a scale reading, not round numbers.
-PurchaserModel purchaserWith(int bagCount, {String name = 'Trần Văn A'}) {
+PurchaserModel purchaserWith(
+  int bagCount, {
+  String name = 'Trần Văn A',
+  TareRate? rate,
+}) {
   var weight = 47.3;
   return PurchaserModel(
     id: '1',
     name: name,
     dateAdded: '30/08/2026 17:53',
+    tareRate: rate,
     listOfRiceBagWeights: [
       for (var i = 0; i < bagCount; i++)
         BagModel(id: 'b$i', weight: weight += (i % 7) * 0.4 - 1.1),
     ],
   );
 }
+
+const deducting = TarePolicy(enabled: true, defaultRate: TareRate.standard);
 
 /// Captures the card and, when RICE_REPORT_OUT is set, writes it there so the
 /// result can actually be looked at rather than only measured.
@@ -38,6 +47,7 @@ Future<Size> captureTo(
   PurchaserModel purchaser,
   String fileName, {
   String locale = 'en',
+  TarePolicy policy = TarePolicy.off,
 }) async {
   Future<Uint8List>? pending;
 
@@ -58,7 +68,9 @@ Future<Size> captureTo(
         builder: (context) => TextButton(
           onPressed: () => pending = ReportShareService.capture(
             context,
-            PurchaserReportCard(report: PurchaserReport(purchaser)),
+            PurchaserReportCard(
+              report: PurchaserReport(purchaser, policy: policy),
+            ),
           ),
           child: const Text('go'),
         ),
@@ -99,6 +111,37 @@ Future<Size> captureTo(
   await tester.pumpAndSettle();
 
   return size;
+}
+
+/// Puts the card on screen so its text can be searched.
+///
+/// [captureTo] cannot be used for this: it renders the card in an overlay
+/// entry and removes the entry again as soon as the PNG is out, so by the time
+/// a finder runs there is nothing left in the tree.
+Future<void> pumpCard(
+  WidgetTester tester,
+  PurchaserModel purchaser, {
+  String locale = 'en',
+  TarePolicy policy = TarePolicy.off,
+}) async {
+  await tester.runAsync(() => AppLocalizations.delegate.load(Locale(locale)));
+
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: AppTheme.lightTheme,
+      locale: Locale(locale),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: PurchaserReportCard(
+            report: PurchaserReport(purchaser, policy: policy),
+          ),
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
 }
 
 void main() {
@@ -164,6 +207,96 @@ void main() {
       expect(flat, report.weights);
       expect(flat, hasLength(7));
       expect(flat.every((w) => w.contains('.')), isTrue);
+    });
+  });
+
+  group('the deduction on the report', () {
+    test('leads with the net, and breaks out how it got there', () {
+      final report = PurchaserReport(purchaserWith(12), policy: deducting);
+
+      expect(report.grossWeight, closeTo(554.2, 0.05));
+      expect(report.tareDeduction, 4.0);
+      expect(report.totalWeight, closeTo(550.2, 0.05));
+      expect(report.showsTare, isTrue);
+    });
+
+    test('carries the rate the purchaser was counted at', () {
+      // Printed on the report so a copy sent today can still be reconciled
+      // after the rate has been changed.
+      final report = PurchaserReport(
+        purchaserWith(12, rate: const TareRate(bags: 4, kgTenths: 5)),
+        policy: deducting,
+      );
+
+      expect(report.tareRate.bags, 4);
+      expect(report.tareRate.kgLabel, '0.5');
+      expect(report.tareDeduction, 1.5);
+    });
+
+    test('shows nothing of it while the switch is off', () {
+      final report = PurchaserReport(purchaserWith(12));
+
+      expect(report.showsTare, isFalse);
+      expect(report.tareDeduction, 0);
+      expect(report.totalWeight, report.grossWeight);
+    });
+
+    test('shows nothing of it when there are no bags to deduct for', () {
+      // 'less 0.0 kg' on a report would only raise a question.
+      final report = PurchaserReport(purchaserWith(0), policy: deducting);
+
+      expect(report.showsTare, isFalse);
+    });
+
+    testWidgets('prints the weighed, the tare and the total', (tester) async {
+      await pumpCard(tester, purchaserWith(12), policy: deducting);
+
+      expect(find.text('Weighed'), findsOneWidget);
+      expect(find.textContaining('Bag tare'), findsOneWidget);
+      expect(find.text('− 4.0 kg'), findsOneWidget);
+      expect(find.text('550.2 kg'), findsOneWidget);
+      expect(
+        find.textContaining('3 bags = 1 kg'),
+        findsOneWidget,
+        reason: 'the recipient can check the total without being told the rate',
+      );
+    });
+
+    testWidgets('the Vietnamese tare block fits too', (tester) async {
+      // The Vietnamese labels are longer than the English throughout, so this
+      // is where the tare line would run into the figure beside it first.
+      await pumpCard(
+        tester,
+        purchaserWith(12),
+        locale: 'vi',
+        policy: deducting,
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.textContaining('Trừ bì'), findsOneWidget);
+      expect(find.text('Khối lượng cân'), findsOneWidget);
+    });
+
+    testWidgets('renders whole, at both locales', (tester) async {
+      // Written out so the tare block can actually be looked at rather than
+      // only measured. Height is checked because the block adds two lines.
+      final plain = await captureTo(tester, purchaserWith(12), 'report_12.png');
+      final withTare = await captureTo(
+        tester,
+        purchaserWith(12),
+        'report_tare.png',
+        policy: deducting,
+      );
+      await captureTo(
+        tester,
+        purchaserWith(12),
+        'report_tare_vi.png',
+        locale: 'vi',
+        policy: deducting,
+      );
+
+      expect(withTare.width, 1440);
+      expect(withTare.height, greaterThan(plain.height));
     });
   });
 

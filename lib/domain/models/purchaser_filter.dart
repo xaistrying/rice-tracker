@@ -11,6 +11,7 @@ import 'purchaser_model.dart';
 
 /// [PurchaserModel.dateAdded] is written as 'dd/MM/yyyy HH:mm'.
 final _dayFormat = DateFormat('dd/MM/yyyy');
+final _timestampFormat = DateFormat('dd/MM/yyyy HH:mm');
 
 /// Parses a 'dd/MM/yyyy' day, or null if it is malformed.
 ///
@@ -179,4 +180,60 @@ class PurchaserFilter {
 
   @override
   int get hashCode => Object.hash(query, period, customRange);
+}
+
+/// The day a purchaser was added, to the minute, or null if it is missing or
+/// malformed.
+DateTime? purchaserAddedAt(PurchaserModel purchaser) {
+  try {
+    return _timestampFormat.parseStrict(purchaser.dateAdded ?? '');
+  } catch (_) {
+    return null;
+  }
+}
+
+/// Newest first, with a time that cannot be read sinking to the bottom.
+int _byNewestFirst(PurchaserModel a, PurchaserModel b) {
+  final timeA = purchaserAddedAt(a);
+  final timeB = purchaserAddedAt(b);
+
+  if (timeA == null || timeB == null) {
+    if (timeA == null && timeB == null) return 0;
+    return timeA == null ? 1 : -1;
+  }
+
+  return timeB.compareTo(timeA);
+}
+
+/// Purchasers grouped by the day they were added, newest first within each day.
+///
+/// Grouping and ordering live here rather than in the list widget for the same
+/// reason applying the filter does: the stats above the list are built from the
+/// same data, and a second copy of this logic is how the two come to disagree.
+///
+/// [purchasers] arrives in the order records were created, and that position is
+/// kept as the tiebreaker. [PurchaserModel.dateAdded] is only written to the
+/// minute, so several purchasers entered inside one minute compare equal on
+/// time — and [List.sort] is not stable, so without the tiebreaker their order
+/// could differ from one rebuild to the next, shuffling under the reader.
+Map<String, List<PurchaserModel>> groupPurchasersByDay(
+  List<PurchaserModel> purchasers,
+) {
+  final byDay = <String, List<int>>{};
+
+  for (var i = 0; i < purchasers.length; i++) {
+    byDay.putIfAbsent(purchaserDayKey(purchasers[i]), () => []).add(i);
+  }
+
+  return {
+    for (final entry in byDay.entries)
+      entry.key:
+          (entry.value..sort((a, b) {
+                final byTime = _byNewestFirst(purchasers[a], purchasers[b]);
+                // Later in the stored list means created later.
+                return byTime != 0 ? byTime : b.compareTo(a);
+              }))
+              .map((i) => purchasers[i])
+              .toList(),
+  };
 }

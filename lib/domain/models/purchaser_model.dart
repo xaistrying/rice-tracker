@@ -3,6 +3,7 @@ import 'dart:convert';
 
 // Project imports:
 import 'package:rice_tracker/domain/models/bag_model.dart';
+import 'package:rice_tracker/domain/models/tare_rate.dart';
 
 class PurchaserModel {
   PurchaserModel({
@@ -10,6 +11,7 @@ class PurchaserModel {
     this.name,
     this.listOfRiceBagWeights,
     this.dateAdded,
+    this.tareRate,
   });
 
   /// Final, so that an edit has to go through [copyWith].
@@ -23,6 +25,15 @@ class PurchaserModel {
   final String? name;
   final List<BagModel>? listOfRiceBagWeights;
   final String? dateAdded;
+
+  /// What this purchaser's sacks weigh, if they differ from everyone else's.
+  ///
+  /// Null means nothing was chosen for them, and the app's default rate is
+  /// used instead — see `TarePolicy.rateFor`. Kept nullable rather than
+  /// defaulted here so that a record written before the deduction existed and
+  /// one deliberately left on the default are the same thing, and both follow
+  /// the default when it changes.
+  final TareRate? tareRate;
 
   /// How many bags this purchaser has.
   ///
@@ -45,11 +56,13 @@ class PurchaserModel {
     String? name,
     List<BagModel>? listOfRiceBagWeights,
     String? dateAdded,
+    TareRate? tareRate,
   }) => PurchaserModel(
     id: id ?? this.id,
     name: name ?? this.name,
     listOfRiceBagWeights: listOfRiceBagWeights ?? this.listOfRiceBagWeights,
     dateAdded: dateAdded ?? this.dateAdded,
+    tareRate: tareRate ?? this.tareRate,
   );
 
   factory PurchaserModel.fromRawJson(String str) =>
@@ -73,7 +86,24 @@ class PurchaserModel {
             ),
           ),
     dateAdded: json["dateAdded"],
+    tareRate: _tareRateFromJson(json),
   );
+
+  /// The stored rate, or null unless both halves are there and usable.
+  ///
+  /// A half-written or zeroed pair falls back to the app default rather than
+  /// being trusted: the bags half is a divisor, so a stored 0 would take every
+  /// total on the screen to infinity.
+  static TareRate? _tareRateFromJson(Map<String, dynamic> json) {
+    final bags = json["tareBags"];
+    final kgTenths = json["tareKgTenths"];
+
+    if (bags is! int || kgTenths is! int) return null;
+
+    final rate = TareRate(bags: bags, kgTenths: kgTenths);
+
+    return rate.isValid ? rate : null;
+  }
 
   /// Both derived values are still written, so the stored shape is unchanged.
   Map<String, dynamic> toJson() => {
@@ -85,6 +115,8 @@ class PurchaserModel {
     "quantity": quantity,
     "totalWeight": totalWeight,
     "dateAdded": dateAdded,
+    "tareBags": tareRate?.bags,
+    "tareKgTenths": tareRate?.kgTenths,
   };
 
   static List<PurchaserModel> fromList(List<dynamic> data) {

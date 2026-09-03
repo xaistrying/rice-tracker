@@ -16,7 +16,6 @@ import 'package:rice_tracker/app/theme/app_dimens.dart';
 import 'package:rice_tracker/app/widgets/card_widget.dart';
 import 'package:rice_tracker/app/widgets/no_something_yet_tile.dart';
 import 'package:rice_tracker/domain/models/purchaser_filter.dart';
-import 'package:rice_tracker/domain/models/purchaser_model.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/app_color.dart';
@@ -31,6 +30,10 @@ class PurchaserList extends StatelessWidget {
     // No buildWhen: the stats above this list are built from the same state
     // without one, and narrowing only this side is how the two come to
     // disagree about what is on screen.
+    // Every card's figure is net, worked out by the same policy the grand
+    // total above and the shared report use.
+    final tarePolicy = context.watch<AppConfigCubit>().state.data.tarePolicy;
+
     return BlocBuilder<AppDataCubit, AppDataState>(
       builder: (context, state) {
         if (state.data.purchaserList.isEmpty) {
@@ -60,11 +63,8 @@ class PurchaserList extends StatelessWidget {
               );
             }
 
-            // Group filtered purchasers by date
-            final Map<String, List<PurchaserModel>> groups = {};
-            for (final p in purchaserList) {
-              groups.putIfAbsent(purchaserDayKey(p), () => []).add(p);
-            }
+            // Grouped by day, and newest first inside each day.
+            final groups = groupPurchasersByDay(purchaserList);
 
             // Sort chronologically (newest first). Comparing the raw
             // 'dd/MM/yyyy' strings would sort by day-of-month before month
@@ -184,7 +184,7 @@ class PurchaserList extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${purchaser.totalWeight.toStringAsFixed(1)} kg',
+                                      '${tarePolicy.netWeightOf(purchaser).toStringAsFixed(1)} kg',
                                       style: TextStyle(
                                         fontSize: AppDimens.fontSize16,
                                         fontWeight: FontWeight.bold,

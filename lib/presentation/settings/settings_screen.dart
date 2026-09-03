@@ -10,10 +10,36 @@ import 'package:rice_tracker/app/bloc/app_config/app_config_cubit.dart';
 import 'package:rice_tracker/app/l10n/generated/app_localizations.dart';
 import 'package:rice_tracker/app/widgets/card_widget.dart';
 import 'package:rice_tracker/presentation/settings/features/delete_all_purchaser.dart';
+import 'package:rice_tracker/presentation/settings/features/tare_deduction.dart';
 import '../../app/extension/context_extension.dart';
 import '../../app/theme/app_color.dart';
 import '../../app/theme/app_dimens.dart';
 import '../../app/widgets/segmented_button_widget.dart';
+
+class _VersionLine extends StatelessWidget {
+  const _VersionLine();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AppConfigCubit, AppConfigState>(
+      builder: (context, state) {
+        final version = state.data.version;
+
+        if (version == null || version.isEmpty) return const SizedBox.shrink();
+
+        return Center(
+          child: Text(
+            'Version $version',
+            style: const TextStyle(
+              fontSize: AppDimens.fontSizeSmall,
+              color: AppColor.grey,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -64,13 +90,6 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
       ),
-      // The stretch at the ends is the overscroll indicator, not the physics:
-      // Android already scrolls with ClampingScrollPhysics, which reports the
-      // excess as an OverscrollNotification, and that is what the indicator
-      // animates on. It can only be turned off here.
-      //
-      // ListView does not forward scrollBehavior the way CustomScrollView
-      // does, so this wraps rather than passing an argument.
       body: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(overscroll: false),
         child: ListView(
@@ -103,7 +122,13 @@ class SettingsScreen extends StatelessWidget {
             ),
             SizedBox(height: AppDimens.padding16),
 
+            TareDeduction(),
+            SizedBox(height: AppDimens.padding16),
+
             DeleteAllPurchaser(),
+            SizedBox(height: AppDimens.padding24),
+
+            const _VersionLine(),
             SizedBox(height: AppDimens.padding16),
           ],
         ),

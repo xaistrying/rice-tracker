@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 // Project imports:
+import 'package:rice_tracker/app/bloc/app_config/app_config_cubit.dart';
 import 'package:rice_tracker/app/bloc/app_data/app_data_cubit.dart';
 import '../../../app/constants/image_constant.dart';
 import '../../../app/extension/context_extension.dart';
@@ -101,11 +102,16 @@ class SearchWithStats extends StatelessWidget {
                   );
                   // The total tracks what is on screen, so it stays consistent
                   // with the count beside it.
-                  final totalWeights = filteredPurchaserList.fold(
-                    0.0,
-                    (previousValue, element) =>
-                        previousValue + element.totalWeight,
-                  );
+                  //
+                  // Net, like every other total in the app, and worked out by
+                  // the same policy object so this cannot disagree with the
+                  // cards below it or with a shared report.
+                  final totalWeights = context
+                      .watch<AppConfigCubit>()
+                      .state
+                      .data
+                      .tarePolicy
+                      .totalNetWeightOf(filteredPurchaserList);
                   return Row(
                     children: [
                       // Number of people
