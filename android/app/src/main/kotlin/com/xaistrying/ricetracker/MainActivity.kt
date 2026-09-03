@@ -1,4 +1,4 @@
-package com.example.rice_tracker
+package com.xaistrying.ricetracker
 
 import io.flutter.embedding.android.FlutterActivity
 
